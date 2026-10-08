@@ -32,4 +32,4 @@ The Qatom catalog Rating & Review service scores listings against this guide. A 
 
 ## About
 
-Published by Qatom, a product of TODAQ Micro Inc. (Toronto, Canada). Builds on Nick Mumford's original qatom-seller-setup skill. MIT licensed. See [CHANGELOG.md](CHANGELOG.md).
+Published by StarwaterHeaven and Wizard Kepler. MIT licensed. See [CHANGELOG.md](CHANGELOG.md).
