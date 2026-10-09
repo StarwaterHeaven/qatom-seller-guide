@@ -94,16 +94,16 @@ A mining-valuation publisher reached this design in this order. Recognise the sa
 
 Mistakes seen: unknown parameters silently ignored; a 404 charged; Qatom masking error text; a public demo key usable by scripts until capped; a site map not regenerated after a hand edit to the catalog; a schema that still named individual items.
 
-## C. Live status: Chofex trip status (Hack the Andes demo)
+## C. Live status: Mexican freight trip status (Hack the Andes example)
 
 Seller: a Mexican freight track-and-trace provider that already knows where every truck is (GPS, carrier ERP, the driver's WhatsApp updates). Buyers: shippers' and brokers' agents.
 
-- Item: a shipment. ID = trip reference (`CHX-1002`); aliases `1002`, `chx1002`.
+- Item: a shipment. ID = trip reference (`MXF-1002`); aliases `1002`, `mxf1002`. Live as catalog items #181 (paid), #182 and #183 (free), seller Qatom Logistics Demo.
 - Free: **trip check** confirms the reference and returns origin, destination and carrier. No position or ETA.
 - Paid (0.010): **trip status** returns position with GPS age, status, ETA with delay, window and confidence, the driver's last update, a data-quality score with flags (`gps_stale`, `driver_unresponsive`, `eta_slipping`), a map link and a one-sentence summary in `es` or `en`.
 - `next_steps` tells the buyer's agent what to do when something is wrong ("ask the carrier to call the driver").
 - Why it sells: every shipper wanted status in its own format. One machine-readable answer lets each buyer's agent format it.
-- Code: https://github.com/StarwaterHeaven/qatom-hack-the-andes/tree/main/examples/chofex-trip-status (synthetic trips, 15 offline tests).
+- Code: https://github.com/StarwaterHeaven/qatom-hack-the-andes/tree/main/examples/mx-freight-trip-status (synthetic trips, 15 offline tests).
 
 ## D. Paid entry and payouts: Centaur League
 

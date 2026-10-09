@@ -26,6 +26,9 @@ Last reviewed: 8 October 2026. Qatom ships often; anything marked "observed" can
 ## Sell
 
 - Create items in the dashboard: name, description, price (USD-TDN per call), method (GET or POST), endpoint URL, input schema, visibility, featured.
+- **Request headers & secret parameters:** observed 9 Oct 2026. Per item, the seller adds headers, query parameters and URL values that Qatom sends on every fulfilment call. Sensitive values are stored encrypted and never shown again; Not sensitive values stay visible in the dashboard; buyers see neither. The endpoint field takes `{input.name}` (a required schema input) and `{secret.name}` (a saved URL value). The section has its own Save headers & parameters button. The dashboard notes that the endpoint URL itself is visible to other users of the account.
+- **Receipt line item:** observed 9 Oct 2026, shown on the checkout confirmation, the receipt and the card statement; renaming the item does not change it.
+- **Availability:** Deactivate removes an item from search and refuses new purchases on the next call (reversible); Archive takes a mislisted or retired item off sale and out of the catalog list.
 - **Arguments:** only properties declared in the schema are forwarded; undeclared inputs are rejected with a clear message. For POST items the arguments arrive as a JSON body.
 - **Free items:** a price of 0 bypasses payment and forwards the call.
 - **Private:** hidden from the master catalog search, visible on the seller's own MCP instance.
@@ -47,6 +50,7 @@ Last reviewed: 8 October 2026. Qatom ships often; anything marked "observed" can
 
 ## Security habits
 
-- Paid route at a secret path; 404 everywhere else; never echo the URL; rotate on exposure.
+- Paid route checks a sensitive `Authorization` header set under Request headers & secret parameters; a secret path adds depth; 404 everywhere else; never echo the URL or headers; rotate on exposure.
+- No secrets in the endpoint URL; other dashboard users can see it.
 - Optional: accept paid calls only from Qatom's egress addresses (ask the Qatom team for the list).
 - Keys in the host's secret store (`wrangler secret put`), never in the repo.

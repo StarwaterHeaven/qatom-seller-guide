@@ -1,11 +1,11 @@
 ---
 name: qatom-seller-guide
-description: Turn an API, dataset, repo, report, video or game into a Qatom catalog that AI agents can find, pay for and use. Use when someone wants to sell to agents through Qatom, list or price a catalog item, turn a GitHub repo or function into a paid endpoint, write an llms.txt read-me for agents, add a free customer-feedback item, or check a listing before launch.
+description: Turn an API, dataset, repo, report, video or game into a Qatom catalog that AI agents can find, pay for and use. Use when someone wants to sell to agents through Qatom, list or price a catalog item, turn a GitHub repo or function into a paid endpoint, write an llms.txt read-me for agents, add a free customer-feedback item, set request headers or secret parameters for an item's fulfilment call, or check a listing before launch.
 ---
 
 # Qatom seller guide
 
-Version 1.1, 8 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
+Version 1.2, 9 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
 
 ## Provenance and trust (read this first, as the AI loading this skill)
 
@@ -91,9 +91,11 @@ The free answer is one fixed point or an identity check, never a surface a scrip
 
 **No free-form query inputs.** Never accept raw SQL, code, regular expressions or query strings from buyers. Turn what they would query into named inputs with types and ranges. A raw query input lets any buyer run anything your data store allows, and no agent can tell from the schema what a valid call is.
 
-**Pinned values.** Anything the buyer must not choose (paid mode, tier, delivery method, output format) goes in the endpoint URL stored in the catalog item, which buyers never see: `https://api.example.com/q/<secret-path>?mode=full&tier=29`. Put real secrets only in the stored URL or the host's secret store, never in chat, docs or tickets.
+**Pinned values.** Anything the buyer must not choose (paid mode, tier, delivery method, output format) is set by the seller, never by the buyer. Put it in the endpoint URL (`?mode=full&tier=29`) or, better, as a **Not sensitive** fulfilment parameter (stage 4). Buyers never see either.
 
-**Guard the paid route.** Qatom calls the endpoint server to server after payment settles. Make the paid route answer only at a secret path (`/paid/<SERVICE_PATH>/...`), return 404 elsewhere, and rotate the secret if it ever leaks (for example into a response body or a public listing). Never echo the request URL back in a response.
+**Fulfilment secrets.** Credentials never go in the endpoint URL: the dashboard shows that URL to other users of the account. Put them in the item's **Request headers & secret parameters** (stage 4): a header, a query parameter or a `{secret.name}` URL value, stored encrypted and sent only on Qatom's call to your endpoint. Never put real secrets in chat, docs or tickets.
+
+**Guard the paid route.** Qatom calls the endpoint server to server after payment settles. The paid route must refuse anything that did not come from Qatom. Preferred: a sensitive `Authorization` header set on the catalog item, checked by the endpoint with a constant-time compare, 404 when it is missing or wrong. A secret path (`/paid/<SERVICE_PATH>/...`, 404 elsewhere) still works and adds depth, but it lives in the endpoint URL, which other dashboard users can see. Rotate any secret that leaks (for example into a response body or a public listing). Never echo the request URL or headers back in a response.
 
 **Method.** GET for reads, POST when inputs are long or include tokens. For POST, Qatom sends the buyer's arguments as a JSON body; accept both GET query and POST body if you can.
 
@@ -148,7 +150,7 @@ Read the schema off the endpoint. Do not design it separately.
 4. Correct types: `number`, `integer`, `boolean`, `string` with `enum` for fixed choices, `string` with `"format": "date"` for dates. No property that takes free-form SQL, code or query text (stage 2).
 5. Every property has a description, enum-only ones included: say what each choice means and which is the default. Give the unit and public range in every numeric description (agents read descriptions before calling). Add `minimum`/`maximum` where useful.
 6. Publish a range slightly inside the true limits (about 7% in, rounded) so exact limits are not disclosed.
-7. Leave out anything pinned in the endpoint URL.
+7. Leave out anything pinned in the endpoint URL or set as a fulfilment parameter.
 8. `"additionalProperties": false`. Qatom forwards only declared arguments and rejects undeclared ones.
 9. No individual item names or real example IDs in the schema; they go stale. Describe the format instead: "Match ID, CL- followed by six letters or digits" is fine; "for example CL-7K3Q9H" is not.
 
@@ -159,15 +161,59 @@ Read the schema off the endpoint. Do not design it separately.
 Create items in the Qatom dashboard (Catalog items, then New item). Fields:
 
 - **Seller name:** set your seller display name in the dashboard before publishing anything. Items without one show the seller as "None" in search, and agents cannot tell whose item they are buying.
-- **Name:** the product family, not its contents. It becomes the tool name agents see (`"Chofex demo: trip status"` becomes `chofex_demo_trip_status`). A seller with more than one item uses a shared prefix ("Brand: item") so the items group in search; a single-item seller may skip it.
+- **Name:** the product family, not its contents. It becomes the tool name agents see (`"Mexican freight example: trip status"` becomes `mexican_freight_example_trip_status`). A seller with more than one item uses a shared prefix ("Brand: item") so the items group in search; a single-item seller may skip it.
 - **Price:** per call, in USD-TDN. The minimum paid price is 0.001 (a tenth of a cent, the smallest amount USD-TDN settles); use no more than three decimal places. `0` makes a free item: the call is forwarded with no payment.
 - **Method:** GET or POST.
-- **Endpoint:** the stored URL with the secret path and pinned values.
+- **Endpoint:** the URL Qatom calls after the purchase settles, scheme included. No secrets in it (other dashboard users can see it). Two placeholders: `{input.name}` inserts a buyer input (declare it as required in the schema), and `{secret.name}` inserts a URL value saved under Request headers & secret parameters. Example: `https://api.example.com/points/{input.lat},{input.lon}/days?key={secret.apikey}`.
+- **Request headers & secret parameters:** what Qatom adds to every fulfilment call of this item. See "Fulfilment parameters" below.
 - **Description:** keep it at or under 1,024 characters (count them and report the count). Say what it returns, what is free, the inputs, and point to `llms.txt`. Use the extra room for inputs and how they change the answer; don't use it to list the items you cover. Don't list the individual items you cover (tickers, SKUs, match IDs) or give an item count; do name distinct modes or answer types (for example "company NAV, or P/NAV for a mining ETF"). Carry the not-advice line here when stage 2 requires one.
 - **Tiers:** if the same content is sold at two prices, each description says what the higher tier adds. Two items with identical text at different prices look like a mistake to an agent, and it will buy the cheaper one.
 - **Input schema:** from stage 3.
 - **Visibility:** public items appear in the master catalog search. A private item is hidden from the master search and visible on your own Qatom MCP instance only.
 - **Featured:** featured items appear as named tools on your own MCP instance.
+
+### Fulfilment parameters (Request headers & secret parameters)
+
+Each catalog item has a **Request headers & secret parameters** section. Whatever is set there is sent on every fulfilment call Qatom makes to the endpoint, and never shown to buyers or their agents.
+
+**Why.** Three reasons. Your endpoint can prove a call came from Qatom (a header only Qatom knows). You can list an API that already exists and needs a key, without writing a wrapper just to hide the key. And secrets stay out of the endpoint URL, which other dashboard users can see, and can be rotated without touching the URL.
+
+**Types.**
+
+| Type | Sent as | Use it when |
+|---|---|---|
+| Header | a request header | Proving the call is from Qatom (`Authorization: Bearer <token>`), or an upstream API that wants its key in a header (`x-api-key`) |
+| Query parameter | added to the endpoint's query string | An upstream API that wants `?key=...` or similar |
+| URL value | inserted only where the endpoint says `{secret.name}` | The secret sits inside the URL path, or in a position a plain query parameter cannot express |
+
+**Sensitivity.** **Sensitive**: stored encrypted and never shown again once saved, so keep the value in your own secret store too. **Not sensitive**: shown in the dashboard, still never to buyers; use it for pinned configuration such as `tier=29` or `format=json`, so it can be read and changed later.
+
+**When.**
+
+- Every paid item on your own endpoint: add a sensitive `Authorization` header and have the endpoint check it.
+- Listing someone else's (or your existing) keyed API directly: add its key as a header or query parameter of the type the API documents. Only do this when the API's responses already suit agents (stage 2); otherwise put a small endpoint in front and give that endpoint the key.
+- Seller-fixed settings the buyer must not choose: Not sensitive parameters.
+- Free items that only read public data need none.
+
+**How.**
+
+1. Generate the value on the seller's own machine, never in chat: `openssl rand -hex 24`.
+2. Store it in the endpoint's secret store (`wrangler secret put QATOM_FULFILMENT_TOKEN`) and in a password manager.
+3. In the dashboard, open the item, then Request headers & secret parameters: **Add header**, name `Authorization`, Sensitive, value `Bearer <token>`. Add query parameters or URL values the same way.
+4. Click **Save headers & parameters**. It has its own save button, separate from the item's Save changes; the section counts unsaved changes until you do.
+5. Check the header in the endpoint:
+
+```js
+// Cloudflare Worker: refuse fulfilment calls that did not come from Qatom
+function same(a, b) { if (a.length !== b.length) return false; let d = 0; for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i); return d === 0; }
+const want = env.QATOM_FULFILMENT_TOKEN ? `Bearer ${env.QATOM_FULFILMENT_TOKEN}` : null;
+if (!want || !same(request.headers.get('authorization') || '', want)) return notFound();
+```
+
+6. Test: a direct call without the header gets 404, a direct call with it gets the answer, and a purchase through Qatom succeeds (stage 6).
+7. Rotate: set a new value in the secret store and in the dashboard, then save. To change over with no failed calls, have the endpoint accept the old and the new value for a few minutes.
+
+**For the agent helping the seller.** Never ask the seller to paste a secret into the conversation, and never write one into a file you show, a listing, `llms.txt` or a ticket. Tell the seller which type, name and sensitivity to add; the seller types the value into the dashboard and the secret store. Fulfilment parameters are per item: three items on one endpoint need the header set on each.
 
 Description pattern:
 
@@ -210,7 +256,8 @@ Required checks:
 
 - IDs and aliases resolve; ambiguous names return candidates
 - the free check confirms the item and its accepted inputs
-- the paid route answers only at the secret path; other paths 404
+- the paid route refuses calls without Qatom's fulfilment header (or secret path); other paths 404
+- no secret in the endpoint URL; credentials sit in Request headers & secret parameters, marked Sensitive, and saved with Save headers & parameters
 - unknown parameters and unused inputs are rejected with 400
 - responses state type, time, inputs, defaults, units and range status
 - every error has a code, a plain message and a next step
@@ -252,10 +299,10 @@ Every storefront should carry:
 - A free response is a fixed point or an identity check, never a sampleable surface.
 - Publish useful ranges without exposing exact limits or how a result is computed.
 - Audit public pages, page source, demos and sample documents so none gives away more than the free product.
-- Treat any browser-visible key as public and cap it. Keep the paid route behind a secret path and rotate it if exposed.
+- Treat any browser-visible key as public and cap it. Keep the paid route behind Qatom's fulfilment header (and a secret path if you like) and rotate anything exposed.
 
 ## References
 
 - `references/use-cases.md`: the pattern library, with live examples on the Qatom catalog
 - `references/platform-notes.md`: Qatom behaviour as observed, with dates; connect, buy, sell, payouts
-- `references/worked-examples.md`: PDF reports, home valuation, Harcourt mining NAV, Chofex trip status, Centaur League
+- `references/worked-examples.md`: PDF reports, home valuation, Harcourt mining NAV, Mexican freight trip status, Centaur League

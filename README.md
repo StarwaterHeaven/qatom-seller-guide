@@ -19,7 +19,7 @@ Then tell your agent: *"Turn this into a Qatom catalog item."* Or read [`skills/
 | [`SKILL.md`](skills/qatom-seller-guide/SKILL.md) | The guide: eight stages from first use case to storefront defaults, with the launch checklist |
 | [`references/use-cases.md`](skills/qatom-seller-guide/references/use-cases.md) | Pattern library, with live examples on the Qatom catalog |
 | [`references/platform-notes.md`](skills/qatom-seller-guide/references/platform-notes.md) | Qatom behaviour as observed, with dates |
-| [`references/worked-examples.md`](skills/qatom-seller-guide/references/worked-examples.md) | PDF reports, home valuation, Harcourt mining NAV, Chofex trip status, Centaur League |
+| [`references/worked-examples.md`](skills/qatom-seller-guide/references/worked-examples.md) | PDF reports, home valuation, Harcourt mining NAV, Mexican freight trip status, Centaur League |
 
 ## Ratings and reviews
 
@@ -27,7 +27,7 @@ The Qatom catalog Rating & Review service scores listings against this guide. A 
 
 ## Related
 
-- Worker starter template and Chofex demo: https://github.com/StarwaterHeaven/qatom-hack-the-andes
+- Worker starter template and examples (Mexican freight trip status, paid video stream): https://github.com/StarwaterHeaven/qatom-hack-the-andes
 - Qatom: https://qatom.ai
 
 ## About

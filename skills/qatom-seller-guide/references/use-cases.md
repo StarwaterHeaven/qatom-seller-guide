@@ -12,7 +12,7 @@ A computed answer at the buyer's inputs. Stateless, read-only, the data already 
 
 ### A2. Live status or record lookup
 "Where is it / what state is it in", from data the seller already collects.
-- **Chofex trip status** (demo, Hack the Andes): shipment reference in, location, status, ETA, last driver update and data-quality flags out. A free sibling confirms the reference exists. See `worked-examples.md`.
+- **Mexican freight trip status** (example, Hack the Andes): shipment reference in, location, status, ETA, last driver update and data-quality flags out. A free sibling confirms the reference exists. See `worked-examples.md`.
 - **npm Package Freshness Check** (#26, 0.001): latest version and release freshness of an npm package. A developer tool a coding agent calls during dependency work.
 - **Weather** (#80, 0.050): daily forecast for any place for 15 days from NOAA GFS data. Public data, packaged for agents.
 

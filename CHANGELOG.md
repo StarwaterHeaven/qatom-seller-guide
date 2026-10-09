@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2 — 9 October 2026
+
+- New in the dashboard: **Request headers & secret parameters** on each catalog item. Added "Fulfilment parameters" to §4: why, the three types (header, query parameter, URL value), Sensitive vs Not sensitive, when to use each, a step-by-step with a Worker header check, rotation, and rules for the agent helping the seller (never handle the secret in chat).
+- Endpoint field: `{input.name}` and `{secret.name}` placeholders (§4).
+- No secrets in the endpoint URL; other dashboard users can see it (§2, §4, §6, platform notes).
+- Guarding the paid route now prefers a sensitive `Authorization` header checked by the endpoint; the secret path remains as added depth (§2, §6, protection principles).
+- Pinned values can be Not sensitive fulfilment parameters (§2, §3).
+- Platform notes: Request headers & secret parameters, Receipt line item, Availability (deactivate vs archive).
+- The Hack the Andes trip status example is now the Mexican freight example (`MXF-` references, `examples/mx-freight-trip-status`).
+
 ## 1.1 — 8 October 2026
 
 Moved to its own repository as the canonical version (previously `skills/qatom-seller-guide` in qatom-hack-the-andes).
