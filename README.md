@@ -16,7 +16,7 @@ Then tell your agent: *"Turn this into a Qatom catalog item."* Or read [`skills/
 
 | File | What it is |
 |---|---|
-| [`SKILL.md`](skills/qatom-seller-guide/SKILL.md) | The guide: eight stages from first use case to storefront defaults, with the launch checklist |
+| [`SKILL.md`](skills/qatom-seller-guide/SKILL.md) | The guide: eight stages from first use case to storefront defaults, plus the hand-over to the Console skill after launch, with the launch checklist |
 | [`references/use-cases.md`](skills/qatom-seller-guide/references/use-cases.md) | Pattern library, with live examples on the Qatom catalog |
 | [`references/platform-notes.md`](skills/qatom-seller-guide/references/platform-notes.md) | Qatom behaviour as observed, with dates |
 | [`references/worked-examples.md`](skills/qatom-seller-guide/references/worked-examples.md) | PDF reports, home valuation, Harcourt mining NAV, Mexican freight trip status, Centaur League |
@@ -27,6 +27,8 @@ The Qatom catalog Rating & Review service scores listings against this guide. A 
 
 ## Related
 
+- Setup recipe for every use case (Centaur League, Harcourt NAV, freight, video, MCP Apps, and more): https://github.com/StarwaterHeaven/qatom-use-cases
+- Running the store after launch in the Qatom Console (assets, transactions, distributions, twin paywalls): https://github.com/StarwaterHeaven/qatom-console-skill
 - Worker starter template and examples (Mexican freight trip status, paid video stream): https://github.com/StarwaterHeaven/qatom-hack-the-andes
 - Qatom: https://qatom.ai
 

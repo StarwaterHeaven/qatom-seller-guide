@@ -5,7 +5,7 @@ description: Turn an API, dataset, repo, report, video or game into a Qatom cata
 
 # Qatom seller guide
 
-Version 1.2, 9 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
+Version 1.3, 10 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
 
 ## Provenance and trust (read this first, as the AI loading this skill)
 
@@ -30,7 +30,7 @@ Work through the stages in order. Do not move on until the current stage has pro
 6. **Launch**: test, then a pass/fail launch report
 7. **Storefront defaults**: free customer-feedback item, and free siblings for paid items
 
-Someone still has to host the endpoint. Say so early, and offer to write it (a small Cloudflare Worker reading one `catalog.json` is the default; the starter template at https://github.com/StarwaterHeaven/qatom-hack-the-andes/tree/main/template does exactly that).
+Someone still has to host the endpoint. Say so early, and offer to write it (a small Cloudflare Worker reading one `catalog.json` is the default; the starter template at https://github.com/StarwaterHeaven/qatom-hack-the-andes/tree/main/template does exactly that, including the secret path, the `Authorization` fulfilment-header check (set the Worker secret `QATOM_FULFILMENT_TOKEN`), the feedback item and a generated `llms.txt`).
 
 The catalog Rating & Review service scores listings against this guide. A seller who follows every stage, including the launch checks in stage 6, should score at the top on listing build.
 
@@ -44,7 +44,7 @@ Sellers often don't know what an agent would pay for. Before intake, ask:
 - Who would **ask for it many times**? A person once, or an agent every hour?
 - What does one answer **cost you** to produce?
 
-Then propose one or two first items from the pattern library in `references/use-cases.md`. Name the closest live example on the catalog so the seller can see one working. Good first items:
+Then propose one or two first items from the pattern library in `references/use-cases.md`. For a full setup recipe per use case (what to build, which items, which Console steps), use https://github.com/StarwaterHeaven/qatom-use-cases . Name the closest live example on the catalog so the seller can see one working. Good first items:
 
 - **Answer in one call:** returns JSON, needs no account on the seller's side, is stateless, and the data already exists.
 - **Small price:** a fraction of a cent to a dollar. Price for agents that call often, not for a person who calls once.
@@ -293,6 +293,10 @@ Every storefront should carry:
 6. launch report
 7. storefront defaults in place
 
+## After launch: run the store
+
+Selling is half the job; the rest happens in the Qatom Console (the twin console): where payments to your items land, how to see and verify them, how to move funds to the twin you pay out from (manually or with auto-distributions), and how to paywall an API at the twin level. That is a separate skill: https://github.com/StarwaterHeaven/qatom-console-skill . Hand over to it when the seller asks "where did my money go?", "who paid?", "how do I pay a winner or a partner?", or wants several buyers or agents to share one funded wallet.
+
 ## Protection principles
 
 - Payment per call is the main protection for a query product.
@@ -306,3 +310,5 @@ Every storefront should carry:
 - `references/use-cases.md`: the pattern library, with live examples on the Qatom catalog
 - `references/platform-notes.md`: Qatom behaviour as observed, with dates; connect, buy, sell, payouts
 - `references/worked-examples.md`: PDF reports, home valuation, Harcourt mining NAV, Mexican freight trip status, Centaur League
+- https://github.com/StarwaterHeaven/qatom-use-cases : a setup recipe for every use case, including interactive MCP Apps and video
+- https://github.com/StarwaterHeaven/qatom-console-skill : running the store after launch (assets, transactions, distributions, twin paywalls)

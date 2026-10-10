@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3 — 10 October 2026
+
+- The starter template now checks Qatom's `Authorization` fulfilment header itself (Worker secret `QATOM_FULFILMENT_TOKEN`, with `QATOM_FULFILMENT_TOKEN_PREVIOUS` for rotation), so following the template meets the §2 guard (§ intro).
+- Stage 0 points to the new use-case repo for full setup recipes.
+- New "After launch: run the store" hand-over to the Qatom Console skill (payments received, verification, distributions, twin paywalls, shared buyer wallets).
+- References and README link qatom-use-cases and qatom-console-skill.
+
 ## 1.2 — 9 October 2026
 
 - New in the dashboard: **Request headers & secret parameters** on each catalog item. Added "Fulfilment parameters" to §4: why, the three types (header, query parameter, URL value), Sensitive vs Not sensitive, when to use each, a step-by-step with a Worker header check, rotation, and rules for the agent helping the seller (never handle the secret in chat).
