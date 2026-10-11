@@ -2,7 +2,7 @@
 
 ## 1.5 — 11 October 2026
 
-- §6: visibility is fixed at creation today, so going public means Duplicate (Private unticked), re-enter sensitive values, then archive the private original; new item id.
+- §6: create items with the visibility they should end up with (public for catalog items; test straight away, announce after the launch report). Private only for items that stay on the seller's own instance. Visibility is fixed at creation; Duplicate is the fallback.
 - §4: after saving headers, reload and check the header is listed; Save changes alone can leave it unsaved.
 
 ## 1.4 — 11 October 2026
