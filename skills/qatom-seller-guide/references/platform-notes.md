@@ -1,6 +1,6 @@
 # Qatom platform notes (observed; confirm against the dashboard)
 
-Last reviewed: 8 October 2026. Qatom ships often; anything marked "observed" can change.
+Last reviewed: 10 October 2026. Qatom ships often; anything marked "observed" can change.
 
 ## Connect
 
@@ -8,6 +8,17 @@ Last reviewed: 8 October 2026. Qatom ships often; anything marked "observed" can
 - Connecting the master MCP gives discovery of every public item on the catalog. That is the one connection a buyer needs.
 - Each seller also gets their own MCP instance; private and featured items behave differently there (below).
 - API docs: https://docs.m.todaq.net. OpenAPI: `https://pay.m.todaq.net/v4/openapi.json`.
+
+## Dashboard (dashboard.qatom.ai) — walked 11 Oct 2026
+
+- **Overview:** account name and plan, MCP status, tiles for MCP instances, catalog items and revenue.
+- **Catalog:** + New item; search; filters (Not archived, Active, Inactive, Archived, All); sort. Item page: Duplicate, Details, Agents (Featured), Pricing (price, receipt line item), Service (method, endpoint, schema editor that validates), Save changes, Request headers & secret parameters (own save), Availability (Deactivate, Archive), Sales, Commodity ID, Visibility, Record.
+- **New item:** Name, Descriptor (the receipt and card-statement line), Description, Digital quantity (USD TDN), Price, Method (defaults to GET), Endpoint, Service schema, Active, **Private to this MCP instance**, Featured, Request headers & secret parameters, Create item.
+- **MCP:** server URL, private flag, deploy version, health, tools (featured and built-in, with schemas), logs, **custom domain** (subdomain by CNAME), **Reboot instance**, **Destroy instance** (irreversible: new hostname and key).
+- **Twins:** every twin of the account (primary, agent, provider): hostname, display name, **API key** (used for Payment Multiplex payers and direct twin calls), balances.
+- **Settings:** **Billing** (plans: **Builder** free, **Pro** $20/mo, **Max** $300/mo, Enterprise; card; invoices), **API Keys** (create, revoke), **Secrets** (client credentials; the public secret used by embeds and guest checkout).
+- **Account:** business name (the seller name buyers see), address, tax number, billing email (verify), delete account.
+- Observed 11 Oct 2026: item pages can be slow to load; wait until the form shows the item you clicked before saving.
 
 ## Wallets (twins)
 
@@ -37,7 +48,9 @@ Last reviewed: 8 October 2026. Qatom ships often; anything marked "observed" can
 - **Description length:** the guide's limit is 1,024 characters (raised from 500 on 8 Oct 2026). Live listings of about 1,000 characters were observed in October 2026.
 - **Price precision:** USD-TDN settles to 0.001. Observed Sept 2026, the dashboard accepts prices with more decimals than that; don't use them.
 - **Seller name:** set in the dashboard. Observed Oct 2026, items from sellers without one show the seller as "None" in search.
-- **Purchase approval:** observed Oct 2026, a purchase may ask the human to approve before it settles (for example above a spend threshold). Expect the prompt when testing your own items.
+- **Purchase approval:** an agent's purchase asks the human to approve unless its price is at or under the human's auto-approve limit. Read it with `GET /v4/user/agent-approvals/settings`, set it with `PUT` (`auto_approve_limit`; `0` = always ask). Only the human's own credentials can change it (OpenAPI, 10 Oct 2026).
+- **Sale verification:** each fulfilment call carries `X-Qatom-Transaction-Id`; `GET /v4/catalog/purchases/{transaction_id}` confirms it is a settled sale of your item. `GET /v4/catalog/revenue` totals what your items have earned (OpenAPI, 10 Oct 2026).
+- **Fulfilment parameters by API:** `GET`/`PUT /v4/catalog/items/{id}/dispatch-params` read and replace an item's Request headers & secret parameters.
 - **Failed calls:** observed Sept 2026, a call the endpoint rejects can still be charged, and Qatom may relay the failure as a generic "Invalid payment request". Automatic refunds and error pass-through are on the roadmap. Test endpoints directly first, and document error causes in `llms.txt`.
 - **Commodity hash:** each item has one (dashboard, or `GET /v4/catalog/items/{id}`). It identifies the item's payments; you need it to find who paid.
 - **Public catalog API:** `GET https://pay.m.todaq.net/v4/catalog/items?limit=100&offset=0` lists public items (fields include `commodity_name`, `commodity_description`, `commodity_cost`, `service_method`, `service_schema`, `active`). Use it to generate `llms.txt` from the live catalog.
@@ -46,7 +59,9 @@ Last reviewed: 8 October 2026. Qatom ships often; anything marked "observed" can
 
 - `POST /v4/transfer` with `address` (a twin URL or an email) and `amount` in USD-TDN sends from the caller's **primary** twin. Payments to your items land on the items' twins, so move funds to the primary (manually or with auto-distribution) before paying out.
 - Find the payer of an entry with `GET /v4/commodity/{hash}/transactions`.
-- Server-side calls need API client credentials for your account (token from `/v4/account/oauth/token`). Ask the Qatom team for them; a dashboard user key is not enough.
+- One provider twin per thing you sell: `POST /v4/user/accounts/{id}/twins` (label it after the product). `GET /v4/twin/{hostname}/binder` (JSON, CSV or raw) and `/inventory` (CSV) export what a twin holds and how it got there.
+- Running the store day to day (distributions, verification, twin paywalls, shared buyer wallets) is in the Console skill: https://github.com/StarwaterHeaven/qatom-console-skill
+- Server-side calls need the account's **client credentials** (Client ID and Client secret), from Dashboard → Settings → Secrets; exchange them for an account token at `/v4/account/oauth/token`. Keep the secret on your server only.
 
 ## Security habits
 

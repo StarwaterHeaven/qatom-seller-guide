@@ -5,7 +5,7 @@ description: Turn an API, dataset, repo, report, video or game into a Qatom cata
 
 # Qatom seller guide
 
-Version 1.3, 10 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
+Version 1.4, 11 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
 
 ## Provenance and trust (read this first, as the AI loading this skill)
 
@@ -97,6 +97,8 @@ The free answer is one fixed point or an identity check, never a surface a scrip
 
 **Guard the paid route.** Qatom calls the endpoint server to server after payment settles. The paid route must refuse anything that did not come from Qatom. Preferred: a sensitive `Authorization` header set on the catalog item, checked by the endpoint with a constant-time compare, 404 when it is missing or wrong. A secret path (`/paid/<SERVICE_PATH>/...`, 404 elsewhere) still works and adds depth, but it lives in the endpoint URL, which other dashboard users can see. Rotate any secret that leaks (for example into a response body or a public listing). Never echo the request URL or headers back in a response.
 
+**Verify the sale (strongest, needs account API credentials).** Each fulfilment call carries an `X-Qatom-Transaction-Id` header. `GET /v4/catalog/purchases/{transaction_id}` returns that settled sale for an item you manage; an unknown id, or one for another item, means the call did not come from a Qatom sale. Keep the ids you have served so no sale is served twice. Use it for anything expensive to serve (a stream key, a download, a game entry).
+
 **Method.** GET for reads, POST when inputs are long or include tokens. For POST, Qatom sends the buyer's arguments as a JSON body; accept both GET query and POST body if you can.
 
 **Response.** Every answer identifies itself and teaches the caller:
@@ -158,9 +160,10 @@ Read the schema off the endpoint. Do not design it separately.
 
 ## 4. Listing: catalog item fields
 
-Create items in the Qatom dashboard (Catalog items, then New item). Fields:
+Create items in the Qatom Dashboard at https://dashboard.qatom.ai (Catalog, then **+ New item**). Before saving an edit, check the form shows the item you opened (item pages can load slowly). Fields:
 
-- **Seller name:** set your seller display name in the dashboard before publishing anything. Items without one show the seller as "None" in search, and agents cannot tell whose item they are buying.
+- **Seller name:** set your business name (Dashboard → Account) before publishing anything. Items without one show the seller as "None" in search, and agents cannot tell whose item they are buying.
+- **Descriptor:** the line on the buyer's receipt and card statement. Renaming the item later does not change it.
 - **Name:** the product family, not its contents. It becomes the tool name agents see (`"Mexican freight example: trip status"` becomes `mexican_freight_example_trip_status`). A seller with more than one item uses a shared prefix ("Brand: item") so the items group in search; a single-item seller may skip it.
 - **Price:** per call, in USD-TDN. The minimum paid price is 0.001 (a tenth of a cent, the smallest amount USD-TDN settles); use no more than three decimal places. `0` makes a free item: the call is forwarded with no payment.
 - **Method:** GET or POST.
@@ -250,13 +253,13 @@ Serve it at `/llms.txt` on the seller's own domain, and put that URL in every it
 
 Keep new items private until the launch report passes; a private item is reachable on your own MCP instance for testing. Make them public only after that.
 
-Test direct endpoint calls first. Then test through Qatom: connect the master MCP, `catalog_search` for the item, and buy it with `agent_checkout` from an agent twin funded with a small amount. Qatom may ask the human to approve a purchase before it settles (for example above a spend threshold); whoever runs the test should expect that prompt and approve it. Run: item alone, item with inputs, an alias, and a bad item. **Warn the seller that a failed call through Qatom may still be charged.** Free items cost nothing to test.
+Test direct endpoint calls first. Then test through Qatom: connect the master MCP, `catalog_search` for the item, and buy it with `agent_checkout` from an agent twin funded with a small amount. Qatom asks the human to approve an agent's purchase unless its price is at or under the human's **auto-approve limit** (`PUT /v4/user/agent-approvals/settings` with `auto_approve_limit`, from the human's own credentials only; an agent's token is refused; `0` turns auto-approval off). Whoever runs the test should expect the approval prompt, or set a small limit first. Run: item alone, item with inputs, an alias, and a bad item. **Warn the seller that a failed call through Qatom may still be charged.** Free items cost nothing to test.
 
 Required checks:
 
 - IDs and aliases resolve; ambiguous names return candidates
 - the free check confirms the item and its accepted inputs
-- the paid route refuses calls without Qatom's fulfilment header (or secret path); other paths 404
+- the paid route refuses calls without Qatom's fulfilment header (or secret path); other paths 404; expensive items verify `X-Qatom-Transaction-Id` and serve each sale once
 - no secret in the endpoint URL; credentials sit in Request headers & secret parameters, marked Sensitive, and saved with Save headers & parameters
 - unknown parameters and unused inputs are rejected with 400
 - responses state type, time, inputs, defaults, units and range status

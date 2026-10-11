@@ -1,11 +1,20 @@
 # Changelog
 
+## 1.4 — 11 October 2026
+
+- Platform notes: a Dashboard section from a full walk-through (Overview, Catalog, New item, MCP, Twins, Settings, Account), plan names Builder / Pro / Max / Enterprise.
+- Client credentials are self-serve: Dashboard → Settings → Secrets (was "ask the Qatom team").
+- §4: Dashboard address, Descriptor field, business name as the seller name, check the form shows the right item before saving.
+
 ## 1.3 — 10 October 2026
 
 - The starter template now checks Qatom's `Authorization` fulfilment header itself (Worker secret `QATOM_FULFILMENT_TOKEN`, with `QATOM_FULFILMENT_TOKEN_PREVIOUS` for rotation), so following the template meets the §2 guard (§ intro).
 - Stage 0 points to the new use-case repo for full setup recipes.
 - New "After launch: run the store" hand-over to the Qatom Console skill (payments received, verification, distributions, twin paywalls, shared buyer wallets).
 - References and README link qatom-use-cases and qatom-console-skill.
+- Closes the open item on the approval threshold: the human's auto-approve limit (`/v4/user/agent-approvals/settings`) (§6, platform notes).
+- New optional guard: verify `X-Qatom-Transaction-Id` with `GET /v4/catalog/purchases/{id}` and serve each sale once (§2, §6).
+- Platform notes: dispatch-params API, catalog revenue, provider twin per product, binder and inventory export.
 
 ## 1.2 — 9 October 2026
 
