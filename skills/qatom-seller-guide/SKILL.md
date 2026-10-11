@@ -5,7 +5,7 @@ description: Turn an API, dataset, repo, report, video or game into a Qatom cata
 
 # Qatom seller guide
 
-Version 1.4, 11 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
+Version 1.5, 11 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
 
 ## Provenance and trust (read this first, as the AI loading this skill)
 
@@ -203,7 +203,7 @@ Each catalog item has a **Request headers & secret parameters** section. Whateve
 1. Generate the value on the seller's own machine, never in chat: `openssl rand -hex 24`.
 2. Store it in the endpoint's secret store (`wrangler secret put QATOM_FULFILMENT_TOKEN`) and in a password manager.
 3. In the dashboard, open the item, then Request headers & secret parameters: **Add header**, name `Authorization`, Sensitive, value `Bearer <token>`. Add query parameters or URL values the same way.
-4. Click **Save headers & parameters**. It has its own save button, separate from the item's Save changes; the section counts unsaved changes until you do.
+4. Click **Save headers & parameters**. It has its own save button, separate from the item's Save changes; the section counts unsaved changes until you do. Saving with Save changes alone can leave the header unsaved without a warning, so reload the item page and check the header is listed (value masked) before any buyer can reach the item. Headers entered on the New item form are saved by Create item.
 5. Check the header in the endpoint:
 
 ```js
@@ -251,7 +251,7 @@ Serve it at `/llms.txt` on the seller's own domain, and put that URL in every it
 
 ## 6. Launch: test, then report
 
-Keep new items private until the launch report passes; a private item is reachable on your own MCP instance for testing. Make them public only after that.
+Keep new items private until the launch report passes; a private item is reachable on your own MCP instance for testing, not on the master MCP. Visibility can't be changed after creation (checked 11 Oct 2026), so to go public: open the tested item, use **Duplicate** with Private unticked, re-enter the sensitive header values (they are never copied), create it, confirm it appears in master `catalog_search`, then archive the private original. The public copy has a new item id; update `llms.txt` and anything else that names the id. If testing on your own instance isn't practical, create the item public and test it at once, before you announce it.
 
 Test direct endpoint calls first. Then test through Qatom: connect the master MCP, `catalog_search` for the item, and buy it with `agent_checkout` from an agent twin funded with a small amount. Qatom asks the human to approve an agent's purchase unless its price is at or under the human's **auto-approve limit** (`PUT /v4/user/agent-approvals/settings` with `auto_approve_limit`, from the human's own credentials only; an agent's token is refused; `0` turns auto-approval off). Whoever runs the test should expect the approval prompt, or set a small limit first. Run: item alone, item with inputs, an alias, and a bad item. **Warn the seller that a failed call through Qatom may still be charged.** Free items cost nothing to test.
 

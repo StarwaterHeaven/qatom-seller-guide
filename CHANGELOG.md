@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5 — 11 October 2026
+
+- §6: visibility is fixed at creation today, so going public means Duplicate (Private unticked), re-enter sensitive values, then archive the private original; new item id.
+- §4: after saving headers, reload and check the header is listed; Save changes alone can leave it unsaved.
+
 ## 1.4 — 11 October 2026
 
 - Platform notes: a Dashboard section from a full walk-through (Overview, Catalog, New item, MCP, Twins, Settings, Account), plan names Builder / Pro / Max / Enterprise.
