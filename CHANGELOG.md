@@ -6,6 +6,7 @@
 - §6: test a cart of two of your items; new launch check.
 - §4: running the account from chat with the account tools (choose, read, approve each change, secrets stay on the Dashboard).
 - Platform notes: cart tools and a live cart test; account tools.
+- Account tools tested live (choose, read, approve, finish once); they follow a login that owns a seller account. Recommend a passkey first.
 
 ## 1.5 — 11 October 2026
 
