@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.6 — 12 October 2026
+
+- §2: carts. Each item in a cart still reaches the endpoint as its own paid call; put the link and summary first, and give links enough life to outlast the cart reply.
+- §6: test a cart of two of your items; new launch check.
+- §4: running the account from chat with the account tools (choose, read, approve each change, secrets stay on the Dashboard).
+- Platform notes: cart tools and a live cart test; account tools.
+
 ## 1.5 — 11 October 2026
 
 - §6: create items with the visibility they should end up with (public for catalog items; test straight away, announce after the launch report). Private only for items that stay on the seller's own instance. Visibility is fixed at creation; Duplicate is the fallback.

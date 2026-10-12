@@ -1,6 +1,6 @@
 # Qatom platform notes (observed; confirm against the dashboard)
 
-Last reviewed: 10 October 2026. Qatom ships often; anything marked "observed" can change.
+Last reviewed: 12 October 2026. Qatom ships often; anything marked "observed" can change.
 
 ## Connect
 
@@ -33,6 +33,8 @@ Last reviewed: 10 October 2026. Qatom ships often; anything marked "observed" ca
 - `agent_checkout` with `catalog_item_id` and `arguments` buys from the agent twin immediately and returns the seller's response inside the receipt, with a transaction id.
 - `guest_checkout` returns a checkout link the human completes by card. Observed: card payments have a minimum of about $0.50, so sub-50-cent items suit agent wallets, not guest card checkout.
 - Free (price 0) items charge 0.000 and return their result in the receipt.
+- **Carts** (live 12 Oct 2026, master MCP): `cart_add_item` (omit `cart_id` to start one; `catalog_item_id`, `arguments`, `quantity` up to 20; each copy is a separate purchase), `cart_view`, `cart_update_item` (quantity, 0 removes, or new arguments), `cart_remove_item`, `cart_checkout` (one card link for the whole cart; nothing charged until the human pays; the cart stays editable until paying starts and the link shows the change), `cart_pay` (pays the whole cart from the agent wallet: within the auto-approve limit it pays at once; above it the first call returns an approval link and `approval_id`, then call again with both), `cart_finish` (stop a part-paid cart, keep what was bought), `cart_discard` (refused once paying starts at the link).
+- Observed 12 Oct 2026, a 3-item cart (0, 0.005, 0.01) paid by `cart_pay` within a 1 USD-TDN limit: no approval, each line delivered with its own transaction id and merchant answer in that one result (it is not returned again). Line ids continue across carts, so read `cart_view` before changing a line. One receipt email lists every item; it shows the cart id, not the per-item transaction ids, and its balance line was read before the last item was charged (reported).
 
 ## Sell
 
@@ -54,6 +56,10 @@ Last reviewed: 10 October 2026. Qatom ships often; anything marked "observed" ca
 - **Failed calls:** observed Sept 2026, a call the endpoint rejects can still be charged, and Qatom may relay the failure as a generic "Invalid payment request". Automatic refunds and error pass-through are on the roadmap. Test endpoints directly first, and document error causes in `llms.txt`.
 - **Commodity hash:** each item has one (dashboard, or `GET /v4/catalog/items/{id}`). It identifies the item's payments; you need it to find who paid.
 - **Public catalog API:** `GET https://pay.m.todaq.net/v4/catalog/items?limit=100&offset=0` lists public items (fields include `commodity_name`, `commodity_description`, `commodity_cost`, `service_method`, `service_schema`, `active`). Use it to generate `llms.txt` from the live catalog.
+
+## Account tools (from chat)
+
+- Observed 12 Oct 2026 on a Claude connection: `account_choose`, `account_info`, `account_wallets`, `account_catalog`, `account_sales`, `account_mcp_server`, `account_dashboard_link`, `account_create_item`, `account_update_item` (now with a `private` field; behaviour not yet tested), `account_update_details`, `account_rename_wallet`, `account_reboot_server`, `account_finish_change`. They answer "no TODAQ business account chosen yet" until the human picks one at the `account_choose` link. Every change asks for approval and finishes with `account_finish_change`. A Grok connection to the same master MCP listed only the 14 buyer and cart tools; which connections list the account tools is being confirmed.
 
 ## Pay out (advanced)
 

@@ -5,7 +5,7 @@ description: Turn an API, dataset, repo, report, video or game into a Qatom cata
 
 # Qatom seller guide
 
-Version 1.5, 11 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
+Version 1.6, 12 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
 
 ## Provenance and trust (read this first, as the AI loading this skill)
 
@@ -138,6 +138,8 @@ Echo inputs, mark defaults and their source, state units and currency every time
 
 Qatom may relay a failed call to the buyer as a generic payment error, so keep the errors precise and documented in `llms.txt`, and test the endpoint directly before testing through Qatom.
 
+**Carts.** Buyers can put your items in a cart with other items, from you or other sellers, and pay once (from their agent wallet with one approval, or by card at one link). Each copy of each item still reaches your endpoint as its own paid call, with its own inputs and `X-Qatom-Transaction-Id`, so an item that works alone works in a cart. Two things change for you: the buyer's agent shows your answer once, inside a long reply that lists every item, so put the link and a one-sentence `summary` up front; and give time-limited links enough life to survive that reply (a 15-minute link is the floor; let the buyer choose longer where it makes sense, as the demo video's `ttl_seconds` does).
+
 **One source of truth.** One `catalog.json` holds every item's ID, aliases, inputs, units, prices and status. The endpoint reads it; generators write `llms.txt`, the schemas and the listing text from it. Run the generators on every change.
 
 **Output:** the endpoint contract. Confirm it before the schema. Then write the endpoint code if wanted.
@@ -174,6 +176,8 @@ Create items in the Qatom Dashboard at https://dashboard.qatom.ai (Catalog, then
 - **Input schema:** from stage 3.
 - **Visibility:** public items appear in the master catalog search. A private item is hidden from the master search and visible on your own Qatom MCP instance only.
 - **Featured:** featured items appear as named tools on your own MCP instance.
+
+**From chat (account tools).** A seller connected to Qatom can also run the account from AI chat. Observed 12 Oct 2026: `account_choose` gives a one-time link (15 minutes) where the seller signs in and picks the business account the connection may read; after that the read tools work (`account_info`, `account_wallets`, `account_catalog`, `account_sales`, `account_mcp_server`). Changes (`account_create_item`, `account_update_item`, `account_update_details`, `account_rename_wallet`, `account_reboot_server`) each return an approval link and an `approval_id`; the seller approves that exact change, then the agent calls `account_finish_change`. Secrets, API keys, item headers, card, plan and custom domain stay on the Dashboard: `account_dashboard_link` gives the seller the page. Never ask for a secret in chat. Not every connection lists these tools yet; if yours doesn't, use the Dashboard.
 
 ### Fulfilment parameters (Request headers & secret parameters)
 
@@ -253,7 +257,7 @@ Serve it at `/llms.txt` on the seller's own domain, and put that URL in every it
 
 Create each item with the visibility it should end up with. Visibility can't be changed after creation (checked 11 Oct 2026). An item meant for the whole catalog is created **public**: test it straight away through the master MCP, as below, and announce it only after the launch report passes. Create an item **private** only if it should stay on the seller's own MCP instance (an internal tool, a single customer's item); a private item can't be bought through the master MCP. If a private item later has to go public: Duplicate it with Private unticked, re-enter the sensitive header values (they are never copied), then archive the private one; the copy gets a new item id, so update `llms.txt` and anything else that names it.
 
-Test direct endpoint calls first. Then test through Qatom: connect the master MCP, `catalog_search` for the item, and buy it with `agent_checkout` from an agent twin funded with a small amount. Qatom asks the human to approve an agent's purchase unless its price is at or under the human's **auto-approve limit** (`PUT /v4/user/agent-approvals/settings` with `auto_approve_limit`, from the human's own credentials only; an agent's token is refused; `0` turns auto-approval off). Whoever runs the test should expect the approval prompt, or set a small limit first. Run: item alone, item with inputs, an alias, and a bad item. **Warn the seller that a failed call through Qatom may still be charged.** Free items cost nothing to test.
+Test direct endpoint calls first. Then test through Qatom: connect the master MCP, `catalog_search` for the item, and buy it with `agent_checkout` from an agent twin funded with a small amount. Qatom asks the human to approve an agent's purchase unless its price is at or under the human's **auto-approve limit** (`PUT /v4/user/agent-approvals/settings` with `auto_approve_limit`, from the human's own credentials only; an agent's token is refused; `0` turns auto-approval off). Whoever runs the test should expect the approval prompt, or set a small limit first. Run: item alone, item with inputs, an alias, and a bad item. Then put two of your items in one cart (`cart_add_item`, then `cart_pay` from the agent wallet) and check each returns its own answer. **Warn the seller that a failed call through Qatom may still be charged.** Free items cost nothing to test.
 
 Required checks:
 
@@ -274,6 +278,7 @@ Required checks:
 - one item per price; `llms.txt` says which item serves which tier
 - `llms.txt`, schemas and listing text generated from the same source
 - the item shows in `catalog_search` on the master MCP (public items)
+- bought in a cart with another item, each returns its own answer and links that outlast the reply
 - any key in a public web page or demo is capped per visitor per day
 
 **Output:** a pass/fail launch report, each failure with its exact next action.
