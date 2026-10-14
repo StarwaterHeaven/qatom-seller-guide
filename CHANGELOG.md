@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.7 — 14 October 2026
+
+- §7: refunds and billing problems (seller feedback item first, then support@todaq.net; cart items are quoted by their own transaction id).
+- §7: where in-chat views (MCP Apps) render: Claude, ChatGPT and Hermes; not Grok or Muse. Always return text and a link too.
+- Platform notes: a Clients section (how Claude, Grok and Muse connect; the first-sign-in passkey and top-up screens; per-tool permission prompts; the support address).
+
 ## 1.6 — 12 October 2026
 
 - §2: carts. Each item in a cart still reaches the endpoint as its own paid call; put the link and summary first, and give links enough life to outlast the cart reply.

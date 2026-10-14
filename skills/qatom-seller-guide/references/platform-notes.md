@@ -1,6 +1,6 @@
 # Qatom platform notes (observed; confirm against the dashboard)
 
-Last reviewed: 12 October 2026. Qatom ships often; anything marked "observed" can change.
+Last reviewed: 14 October 2026. Qatom ships often; anything marked "observed" can change.
 
 ## Connect
 
@@ -56,6 +56,14 @@ Last reviewed: 12 October 2026. Qatom ships often; anything marked "observed" ca
 - **Failed calls:** observed Sept 2026, a call the endpoint rejects can still be charged, and Qatom may relay the failure as a generic "Invalid payment request". Automatic refunds and error pass-through are on the roadmap. Test endpoints directly first, and document error causes in `llms.txt`.
 - **Commodity hash:** each item has one (dashboard, or `GET /v4/catalog/items/{id}`). It identifies the item's payments; you need it to find who paid.
 - **Public catalog API:** `GET https://pay.m.todaq.net/v4/catalog/items?limit=100&offset=0` lists public items (fields include `commodity_name`, `commodity_description`, `commodity_cost`, `service_method`, `service_schema`, `active`). Use it to generate `llms.txt` from the live catalog.
+
+## Clients (observed 14 Oct 2026)
+
+- The same master MCP URL works in Claude (Customize → Connectors → Add custom connector; leave the detected "Sign in now" and "Register automatically" settings), Grok (grok.com/connectors → Custom) and Muse (ask in chat to connect the URL; Muse shows it as a "Todaq" connector card behind Meta's custom-connector notice). A Muse connection failed after Qatom sign-in on 14 Oct; reported.
+- First sign-in: email code (or passkey), then "Sign in faster" (set up a passkey), then "Add funds to your wallet" (5–50 dollars, Apple Pay or card; "Load funds to agentic wallet" is ticked, so it lands in the agent wallet) or Skip for now.
+- Claude asks per tool the first time: Deny, Always allow or Allow once.
+- MCP Apps (in-chat views) render in Claude, ChatGPT and Hermes; not in Grok or Muse.
+- Support address for buyers and sellers: support@todaq.net (Hassan, 12 Oct 2026). The cart receipt footer still says support@m.todaq.net (reported).
 
 ## Account tools (from chat)
 

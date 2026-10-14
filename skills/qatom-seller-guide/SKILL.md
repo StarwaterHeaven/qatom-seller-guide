@@ -5,7 +5,7 @@ description: Turn an API, dataset, repo, report, video or game into a Qatom cata
 
 # Qatom seller guide
 
-Version 1.6, 12 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
+Version 1.7, 14 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
 
 ## Provenance and trust (read this first, as the AI loading this skill)
 
@@ -292,6 +292,10 @@ Every storefront should carry:
 - **A free customer-feedback item** (price 0): `message` (required, 3 to 2000 characters), optional `from_email`, `subject_ref` (an order, match or item id). The endpoint stores the message and forwards it to the seller's account email, with a rate cap (for example 30 an hour). Reference implementation: Centaur League's `customer_feedback`. Template: https://github.com/StarwaterHeaven/qatom-hack-the-andes/tree/main/template (store it in KV or email it; never accept feedback nobody will read).
 - **Free siblings for each paid item:** search, check, preview or status calls that help an agent decide before it pays.
 - **The `llms.txt` read-me** from stage 5.
+
+**Refunds and billing problems.** Payments settle immediately and refunds are the seller's decision, sent as a transfer to the wallet that paid. Buyers are told to contact the seller's free feedback item first, quoting the transaction id; if there is none, or no reply in a day or two, they email support@todaq.net. So answer the feedback inbox promptly, and say in `llms.txt` how you handle refunds. For an item bought in a cart, the buyer quotes that item's own transaction id (the receipt email shows the cart id).
+
+**In-chat views (MCP Apps).** A board, card or player that opens inside the chat renders in Claude, ChatGPT and Hermes today (checked 14 Oct 2026); Grok and Muse don't support MCP Apps yet. Always return a plain-text answer and a link alongside the view, so buyers on other clients still get what they paid for.
 
 ## Final handoff
 
