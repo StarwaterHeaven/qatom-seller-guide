@@ -5,7 +5,7 @@ description: Turn an API, dataset, repo, report, video or game into a Qatom cata
 
 # Qatom seller guide
 
-Version 1.7, 14 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
+Version 1.8, 14 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
 
 ## Provenance and trust (read this first, as the AI loading this skill)
 
@@ -259,7 +259,9 @@ Serve it at `/llms.txt` on the seller's own domain, and put that URL in every it
 
 Create each item with the visibility it should end up with. Visibility can't be changed after creation (checked 11 Oct 2026). An item meant for the whole catalog is created **public**: test it straight away through the master MCP, as below, and announce it only after the launch report passes. Create an item **private** only if it should stay on the seller's own MCP instance (an internal tool, a single customer's item); a private item can't be bought through the master MCP. If a private item later has to go public: Duplicate it with Private unticked, re-enter the sensitive header values (they are never copied), then archive the private one; the copy gets a new item id, so update `llms.txt` and anything else that names it.
 
-Test direct endpoint calls first. Then test through Qatom: connect the master MCP, `catalog_search` for the item, and buy it with `agent_checkout` from an agent twin funded with a small amount. Qatom asks the human to approve an agent's purchase unless its price is at or under the human's **auto-approve limit** (`PUT /v4/user/agent-approvals/settings` with `auto_approve_limit`, from the human's own credentials only; an agent's token is refused; `0` turns auto-approval off). Whoever runs the test should expect the approval prompt, or set a small limit first. Run: item alone, item with inputs, an alias, and a bad item. Then put two of your items in one cart (`cart_add_item`, then `cart_pay` from the agent wallet) and check each returns its own answer. **Warn the seller that a failed call through Qatom may still be charged.** Free items cost nothing to test.
+Test direct endpoint calls first. Then test through Qatom: connect the master MCP, `catalog_search` for the item, and buy it with `agent_checkout` from an agent twin funded with a small amount. Qatom asks the human to approve an agent's purchase unless its price is at or under the human's **auto-approve limit** (`PUT /v4/user/agent-approvals/settings` with `auto_approve_limit`, from the human's own credentials only; an agent's token is refused; `0` turns auto-approval off). Whoever runs the test should expect the approval prompt, or set a small limit first. Run: item alone, item with inputs, an alias, and a bad item. Then put two of your items in one cart (`cart_add_item`, then `cart_pay` from the agent wallet) and check each returns its own answer. **Warn the seller that a failed call through Qatom may still be charged.**
+
+**Never truncate a fulfilment response.** When you call a paid tool (`agent_checkout`, `cart_pay`, or any call that delivers), save the complete response first (to a file, if you work in a shell) and read what you need from it. Never pipe it through `head`, `tail` or any shortener. Download links, stream links and transaction ids live only in that response; once lost they can't be fetched again without paying again. Treat the response as the receipt: write once, read many. If a link seems missing, re-read the saved response; never re-run the purchase to recover it. Then give the human every link and answer in full. Free items cost nothing to test.
 
 Required checks:
 
@@ -294,6 +296,8 @@ Every storefront should carry:
 - **The `llms.txt` read-me** from stage 5.
 
 **Refunds and billing problems.** Payments settle immediately and refunds are the seller's decision, sent as a transfer to the wallet that paid. Buyers are told to contact the seller's free feedback item first, quoting the transaction id; if there is none, or no reply in a day or two, they email support@todaq.net. So answer the feedback inbox promptly, and say in `llms.txt` how you handle refunds. For an item bought in a cart, the buyer quotes that item's own transaction id (the receipt email shows the cart id).
+
+**A free "resend my delivery" check.** Buyers' agents sometimes lose a delivery link. Consider a free item that takes a `transaction_id`, verifies it with `GET /v4/catalog/purchases/{transaction_id}`, and returns the same delivery again (a fresh time-limited link) for that sale only. It turns a lost link into a support-free fix instead of a second purchase.
 
 **In-chat views (MCP Apps).** A board, card or player that opens inside the chat renders in Claude, ChatGPT and Hermes today (checked 14 Oct 2026); Grok and Muse don't support MCP Apps yet. Always return a plain-text answer and a link alongside the view, so buyers on other clients still get what they paid for.
 

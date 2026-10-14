@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8 — 14 October 2026
+
+- §6: never truncate a fulfilment response; save it as the receipt and never re-buy to recover a link (from Torque's live cart test).
+- §7: an optional free "resend my delivery" item keyed on the transaction id.
+- Platform notes: fulfilment responses can't be fetched again today.
+
 ## 1.7 — 14 October 2026
 
 - §7: refunds and billing problems (seller feedback item first, then support@todaq.net; cart items are quoted by their own transaction id).
