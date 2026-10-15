@@ -10,13 +10,13 @@ This repository is the **canonical** version of the guide, for every Qatom selle
 npx skills add StarwaterHeaven/qatom-seller-guide --skill qatom-seller-guide
 ```
 
-Then tell your agent: *"Turn this into a Qatom catalog item."* Or read [`skills/qatom-seller-guide/SKILL.md`](skills/qatom-seller-guide/SKILL.md) directly.
+Then tell your agent: *"Turn this into a Qatom catalog item."* or *"Set up my Qatom store for me."* Or read [`skills/qatom-seller-guide/SKILL.md`](skills/qatom-seller-guide/SKILL.md) directly.
 
 ## What's inside
 
 | File | What it is |
 |---|---|
-| [`SKILL.md`](skills/qatom-seller-guide/SKILL.md) | The guide: eight stages from first use case to storefront defaults, plus the hand-over to the Console skill after launch, with the launch checklist |
+| [`SKILL.md`](skills/qatom-seller-guide/SKILL.md) | The guide: eight stages from first use case to storefront defaults, how an agent sets up the store for the seller, the hand-over to the Console skill after launch, and the launch checklist |
 | [`references/use-cases.md`](skills/qatom-seller-guide/references/use-cases.md) | Pattern library, with live examples on the Qatom catalog |
 | [`references/platform-notes.md`](skills/qatom-seller-guide/references/platform-notes.md) | Qatom behaviour as observed, with dates |
 | [`references/worked-examples.md`](skills/qatom-seller-guide/references/worked-examples.md) | PDF reports, home valuation, Harcourt mining NAV, Mexican freight trip status, Centaur League |

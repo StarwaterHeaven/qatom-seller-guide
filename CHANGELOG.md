@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.9 — 15 October 2026
+
+- New section, high in the guide: **When the seller wants you to set up the store.** Who does what, what to check first, agreeing the whole plan before any change, the order of changes (seller name, items created inactive when they need a secret header, the header on the dashboard, then descriptor and activation), the approve-then-finish loop, reading every change back, launch, and what the agent never does.
+- Aligned with the official TODAQmicro/qatom-skill agent guide (15 Oct 2026): master MCP canonical URL is `https://mcp.m.todaq.net`; sign-in by email code or passkey; approvals on the approval page or the Qatom mobile app, never by the agent; links only from tool results; the full `account_dashboard_link` page list; `account_create_item` has no descriptor; method can be PUT.
+- §6: `account_update_item` accepts `private` (untested; don't rely on it yet).
+- §7: refund path adds the Team Kepler feedback item (catalog item 194).
+- USD-TDN described as a USD-denominated digital bearer asset.
+
 ## 1.8 — 14 October 2026
 
 - §6: never truncate a fulfilment response; save it as the receipt and never re-buy to recover a link (from Torque's live cart test).

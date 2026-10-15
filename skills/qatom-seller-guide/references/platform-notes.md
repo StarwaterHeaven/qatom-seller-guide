@@ -4,7 +4,7 @@ Last reviewed: 14 October 2026. Qatom ships often; anything marked "observed" ca
 
 ## Connect
 
-- **Master MCP:** `https://mcp.m.todaq.net/mcp`. OAuth via `https://pay.m.todaq.net`, scopes `openid profile email twin`. Add it as a custom connector in your client (Claude: Settings > Connectors > Add custom connector). Grok and other MCP clients take the same URL.
+- **Master MCP:** `https://mcp.m.todaq.net` (its canonical address since 15 Oct 2026; `/mcp` still works for connectors saved with it). OAuth via `https://pay.m.todaq.net`, scopes `openid profile email twin`. Add it as a custom connector in your client (Claude: Settings > Connectors > Add custom connector). Grok and other MCP clients take the same URL.
 - Connecting the master MCP gives discovery of every public item on the catalog. That is the one connection a buyer needs.
 - Each seller also gets their own MCP instance; private and featured items behave differently there (below).
 - API docs: https://docs.m.todaq.net. OpenAPI: `https://pay.m.todaq.net/v4/openapi.json`.
@@ -85,3 +85,15 @@ Last reviewed: 14 October 2026. Qatom ships often; anything marked "observed" ca
 - No secrets in the endpoint URL; other dashboard users can see it.
 - Optional: accept paid calls only from Qatom's egress addresses (ask the Qatom team for the list).
 - Keys in the host's secret store (`wrangler secret put`), never in the repo.
+
+## Updates from TODAQmicro/qatom-skill (15 Oct 2026)
+
+- The official agent guide (`CLAUDE.md`, merged 15 Oct 2026) names the server's canonical URL as its origin and lists the live tools: `catalog_search`, `agent_checkout`, `guest_checkout`, `agent_wallet_info`, `transfer_to_agent`, `fund_primary_wallet`, the read-only `account_*` tools and the `account_*` change tools, each change approved at a link and finished with `account_finish_change`.
+- Its rules for agents, adopted in this guide: approvals are never optional and never given by the agent; links come from tool results, never hard-coded; secrets are set up in the dashboard only; `transfer_to_agent` only for an amount the user asked for; agents don't make real-money or live-account changes as a test.
+- `agent_checkout` returns an approval link and an `approval_id` unless the purchase is within the user's auto-approve limit; after the user approves, call it again with the same item, the same arguments and the `approval_id`.
+- `guest_checkout`: collect every required input in chat first; the card checkout page asks for nothing.
+- A seller's own MCP server has the buyer tools and `mcp_server_info` (no `account_*` tools); featured items appear there as their own tools.
+- Purchases and top-ups can also be approved in the Qatom mobile app.
+- Sign-in is an emailed one-time code or a passkey (the old "2FA code from the app" wording is out of date).
+- `account_create_item` fields: `name`, `price`, `endpoint` (required), `description`, `method` (default GET), `inputs`, `active` (default true), `private`, `featured`. No `descriptor`: set it with `account_update_item`, which also takes `archived`.
+
