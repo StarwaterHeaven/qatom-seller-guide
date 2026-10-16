@@ -1,6 +1,6 @@
 # Qatom platform notes (observed; confirm against the dashboard)
 
-Last reviewed: 14 October 2026. Qatom ships often; anything marked "observed" can change.
+Last reviewed: 15 October 2026. Qatom ships often; anything marked "observed" can change.
 
 ## Connect
 
@@ -54,6 +54,8 @@ Last reviewed: 14 October 2026. Qatom ships often; anything marked "observed" ca
 - **Purchase approval:** an agent's purchase asks the human to approve unless its price is at or under the human's auto-approve limit. Read it with `GET /v4/user/agent-approvals/settings`, set it with `PUT` (`auto_approve_limit`; `0` = always ask). Only the human's own credentials can change it (OpenAPI, 10 Oct 2026).
 - **Sale verification:** each fulfilment call carries `X-Qatom-Transaction-Id`; `GET /v4/catalog/purchases/{transaction_id}` confirms it is a settled sale of your item. `GET /v4/catalog/revenue` totals what your items have earned (OpenAPI, 10 Oct 2026).
 - **Fulfilment parameters by API:** `GET`/`PUT /v4/catalog/items/{id}/dispatch-params` read and replace an item's Request headers & secret parameters.
+- **Non-2xx replies:** observed 15 Oct 2026, a free item whose endpoint answered 404 reached the buyer as "Paywall error 502: The endpoint for this item returned 404. The payment has settled and is recorded", with the seller's own message dropped. Answer expected misses with 200 and `ok: false`.
+- **Plans:** observed 15 Oct 2026 at registration, Builder (free) allows 1 agent, up to 5 catalog items and up to 25 transactions a month. Free purchases get transaction ids too; assume they count.
 - **Failed calls:** observed Sept 2026, a call the endpoint rejects can still be charged, and Qatom may relay the failure as a generic "Invalid payment request". Automatic refunds and error pass-through are on the roadmap. Test endpoints directly first, and document error causes in `llms.txt`.
 - **Commodity hash:** each item has one (dashboard, or `GET /v4/catalog/items/{id}`). It identifies the item's payments; you need it to find who paid.
 - **Public catalog API:** `GET https://pay.m.todaq.net/v4/catalog/items?limit=100&offset=0` lists public items (fields include `commodity_name`, `commodity_description`, `commodity_cost`, `service_method`, `service_schema`, `active`). Use it to generate `llms.txt` from the live catalog.
@@ -70,6 +72,8 @@ Last reviewed: 14 October 2026. Qatom ships often; anything marked "observed" ca
 
 - Observed 12 Oct 2026 on a Claude connection: `account_choose`, `account_info`, `account_wallets`, `account_catalog`, `account_sales`, `account_mcp_server`, `account_dashboard_link`, `account_create_item`, `account_update_item` (now with a `private` field; behaviour not yet tested), `account_update_details`, `account_rename_wallet`, `account_reboot_server`, `account_finish_change`. They answer "no TODAQ business account chosen yet" until the human picks one at the `account_choose` link. Every change asks for approval and finishes with `account_finish_change`. A Grok connection to the same master MCP, signed in with an email that owns no seller account, listed only the 14 buyer and cart tools: the account tools appear to follow the login (to be confirmed by Qatom). Live test 12 Oct 2026 on Dobox: `account_choose` link → sign in (passkey or email code) → "Which account may your agent use?" (names the asking app, lists the login's seller accounts) → "Done. The agent now uses Dobox." Then `account_info`, `account_wallets`, `account_catalog`, `account_sales`, `account_mcp_server` all answered. `account_rename_wallet` returned an approval link; the approval page (sign in, then Change + Account, Approve) said "Approved. Go back to your conversation to let the agent finish"; `account_finish_change` made the change, and a second call was refused ("cannot make the change twice").
 - Sign-in: every approval and choose page asks the human to sign in; a passkey makes it one tap. Recommend setting one up first.
+- Observed 15 Oct 2026 (Secure Secrets Exchange setup): the account tools follow the login. `account_choose` offered only that login's seller accounts, so managing a store registered under another email meant disconnecting the master MCP and reconnecting with that email. Each approval asked for a fresh sign-in even minutes after the last one; with email codes the one-time-code limit ("too many codes, wait and try again") was hit twice in about 20 minutes and two approvals expired. There is no page to add a passkey after registration (reported as a bug). Passkeys don't complete inside embedded browser panes; use the person's own browser.
+- Observed 15 Oct 2026: two paid items created with `active: false` became active when their Sensitive headers were saved on the dashboard. Read `account_catalog` after adding headers.
 
 ## Pay out (advanced)
 

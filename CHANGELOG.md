@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.10 — 15 October 2026
+
+From setting up Secure Secrets Exchange (catalog items 196 to 199) end to end with the account tools.
+
+- §2: **Wrapping open-source or third-party software**: close the upstream's own routes with an allowlist and check them from outside (the secrets core behind a paid item still served its own free create API until the tunnel was narrowed).
+- §2: **Sensitive items**: a `/security` threat model, `security.txt`, published code, and an end-to-end mode (key in the link's `#` fragment, script hashes pinned in CSP). Reference implementation linked.
+- §2: **Expected misses are answers, not errors**: return 200 with `ok: false`, because Qatom turns any non-2xx into a paywall error and drops your message.
+- Setup: the connection follows the login (reconnect with the store's email); saving a header can activate an item on its own; passkey at registration (none can be added later today), fresh sign-in per approval and the one-time-code limit.
+- §6: four new launch checks (wrapped routes, expected misses, sensitive items, polling off Qatom so it doesn't spend the plan's monthly transactions).
+- Platform notes: non-2xx relay, Builder plan limits, account tools and sign-in behaviour, header save activating items.
+
 ## 1.9 — 15 October 2026
 
 - New section, high in the guide: **When the seller wants you to set up the store.** Who does what, what to check first, agreeing the whole plan before any change, the order of changes (seller name, items created inactive when they need a secret header, the header on the dashboard, then descriptor and activation), the approve-then-finish loop, reading every change back, launch, and what the agent never does.

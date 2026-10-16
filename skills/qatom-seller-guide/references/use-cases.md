@@ -27,6 +27,10 @@ The seller already pays for or runs an API with a key. A thin Worker adds the ke
 A GitHub project whose core function a stranger's agent would call: transcription, auditing, conversion, generation, scoring. Host the function and sell the call; keep the repo open source.
 - Starter: https://github.com/StarwaterHeaven/qatom-hack-the-andes/tree/main/template . Candidates from the Crafter Station community: https://github.com/StarwaterHeaven/qatom-hack-the-andes/blob/main/docs/repo-to-catalog.md
 
+### A6. Sensitive hand-off (secrets, credentials, personal data)
+A paid action that moves something sensitive between an agent and a person, with the other side free (a browser only). Sell trust you can show: a `/security` threat model, published code, an end-to-end mode with the key in the link fragment, browser scripts pinned by hash. Close the routes of any open-source core you run behind it.
+- **Secure Secrets Exchange** (#199 create link 0.100, #198 request a secret 0.100, #197 retrieve free, #196 feedback free): one-time secret links and requests. See the use-cases repo recipe 10 and https://github.com/StarwaterHeaven/secure-secrets-exchange .
+
 ## B. Content and media
 
 ### B1. Documents and reports

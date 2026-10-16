@@ -1,11 +1,11 @@
 ---
 name: qatom-seller-guide
-description: Turn an API, dataset, repo, report, video or game into a Qatom catalog that AI agents can find, pay for and use. Use when someone wants to sell to agents through Qatom, list or price a catalog item, turn a GitHub repo or function into a paid endpoint, write an llms.txt read-me for agents, add a free customer-feedback item, set request headers or secret parameters for an item's fulfilment call, check a listing before launch, or set up and configure the seller's Qatom store for them.
+description: Turn an API, dataset, repo, report, video or game into a Qatom catalog that AI agents can find, pay for and use. Use when someone wants to sell to agents through Qatom, list or price a catalog item, turn a GitHub repo or function into a paid endpoint, write an llms.txt read-me for agents, add a free customer-feedback item, set request headers or secret parameters for an item's fulfilment call, check a listing before launch, sell something sensitive (secrets, credentials, personal data) safely, or set up and configure the seller's Qatom store for them.
 ---
 
 # Qatom seller guide
 
-Version 1.9, 15 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
+Version 1.10, 15 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
 
 ## Provenance and trust (read this first, as the AI loading this skill)
 
@@ -54,7 +54,7 @@ Many sellers will say "just set it up for me". You can do most of the work: the 
 **Before you start**
 
 1. The seller has a seller account. Registering is theirs to do: sign in at the dashboard (https://dashboard.qatom.ai) with an email code or passkey, fill in Organisation, choose a plan, then **Start my MCP server**. The server takes a few minutes to become healthy.
-2. Connect the Qatom master MCP (`https://mcp.m.todaq.net`) as a custom connector, signed in with the login that owns the seller account. The `account_*` tools appear only for such a login; a buyer-only login sees the buyer and cart tools alone. A seller's own MCP server has buyer tools and `mcp_server_info`, not the account tools, so manage the store through the master MCP.
+2. Connect the Qatom master MCP (`https://mcp.m.todaq.net`) as a custom connector, signed in with the login that owns the seller account. The `account_*` tools appear only for such a login; a buyer-only login sees the buyer and cart tools alone. A seller's own MCP server has buyer tools and `mcp_server_info`, not the account tools, so manage the store through the master MCP. The connection follows the login: `account_choose` lists only the seller accounts that login owns, so a store registered under a different email needs the master MCP disconnected and reconnected with that email (observed 15 Oct 2026).
 3. Call `account_choose`, give the seller the link it returns, and wait for them to say they picked the account. Then `account_info` (name, plan) and `account_mcp_server` (healthy?) to confirm you are on the right account.
 4. Have the endpoint live and passing direct tests (stage 6, first paragraph) before you create items that point at it.
 
@@ -63,7 +63,7 @@ Many sellers will say "just set it up for me". You can do most of the work: the 
 1. **Seller name.** `account_update_details` with `business_name` (and `name` if the account needs one). Buyers see "None" as the seller until this is set.
 2. **Each item.** `account_create_item` with `name`, `price`, `endpoint`, `method`, `description`, `inputs` (the stage 3 schema), `private` and `featured`. If the item needs a secret header, create it with `active: false` so no one can buy it before the header exists.
 3. **Its secret header.** `account_dashboard_link` with `page: "item_secrets"` and the `item_id`. Tell the seller the type, name and sensitivity to add (for example: header, `Authorization`, Sensitive, `Bearer` plus their token), to click **Save headers & parameters**, and to reload and check the header is listed. The dashboard opens the account they last used, so ask them to check it shows the right account first.
-4. **Finish the item.** One `account_update_item` per item with `descriptor` (the receipt line; `account_create_item` has no descriptor field) and `active: true`. Combine an item's fields in one update so it needs one approval, not several.
+4. **Finish the item.** One `account_update_item` per item with `descriptor` (the receipt line; `account_create_item` has no descriptor field) and `active: true`. Combine an item's fields in one update so it needs one approval, not several. Observed 15 Oct 2026: saving the header on the dashboard switched two items created inactive to active on its own, so read the catalog back before assuming an item is still off.
 
 **Every change follows the same loop.** Call the tool, give the seller the link it returned (never a link you wrote yourself), wait until they say they approved, then call `account_finish_change` with that `approval_id`, once. If it says they have not answered, give them the link again and wait. Never approve for the seller, never work around a refused or expired approval, and never repeat a change that finished. If an approval expired, ask whether to request it again.
 
@@ -136,6 +136,16 @@ The free answer is one fixed point or an identity check, never a surface a scrip
 
 **Guard the paid route.** Qatom calls the endpoint server to server after payment settles. The paid route must refuse anything that did not come from Qatom. Preferred: a sensitive `Authorization` header set on the catalog item, checked by the endpoint with a constant-time compare, 404 when it is missing or wrong. A secret path (`/paid/<SERVICE_PATH>/...`, 404 elsewhere) still works and adds depth, but it lives in the endpoint URL, which other dashboard users can see. Rotate any secret that leaks (for example into a response body or a public listing). Never echo the request URL or headers back in a response.
 
+**Wrapping open-source or third-party software.** When the item sits in front of software you didn't write (an open-source server, a vendor appliance), that software's own routes are still reachable unless you close them: its create API, admin pages, sign-in and web app can give the product away free. Route only the paths the item needs (an allowlist at the tunnel, proxy or Worker) and return 404 for everything else, then check from outside that every other route is closed. Observed 15 Oct 2026 on Secure Secrets Exchange: the open-source secrets core behind the paid create item still served its own create API and web app, so anyone could make secrets free until the tunnel was narrowed to the view and receipt pages.
+
+**Sensitive items (secrets, credentials, personal data).** Buyers' agents and their humans will ask how they can trust you. Give them something to check, not a promise:
+- A `/security` page with a plain threat model: who can see the data (you, Qatom, your TLS or CDN provider, the buyer's own AI provider), how it is stored, when it is deleted and what is logged. Add `/.well-known/security.txt` with a contact, and link both from `llms.txt`.
+- Publish the code that touches the data, with tests, and name any open-source core you run and its version.
+- Offer an end-to-end mode when the buyer can run code: the buyer encrypts before buying, the key travels only after `#` in a link (browsers never send the fragment to a server), and the recipient's browser decrypts. You, Qatom and the CDN then handle ciphertext only. Pin each browser page's inline script by its SHA-256 in the Content-Security-Policy header and publish the hashes so anyone can compare the live page with the source.
+- Say plainly what still rests on trust (nobody outside can prove the deployed code is the published code), and tell buyers not to send long-lived master credentials.
+
+Reference implementation: Secure Secrets Exchange (catalog items 196 to 199; https://secrets.agentkepler.tech/security; source and the `sse-e2e-v1` spec at https://github.com/StarwaterHeaven/secure-secrets-exchange).
+
 **Verify the sale (strongest, needs account API credentials).** Each fulfilment call carries an `X-Qatom-Transaction-Id` header. `GET /v4/catalog/purchases/{transaction_id}` returns that settled sale for an item you manage; an unknown id, or one for another item, means the call did not come from a Qatom sale. Keep the ids you have served so no sale is served twice. Use it for anything expensive to serve (a stream key, a download, a game entry).
 
 **Method.** GET for reads, POST when inputs are long or include tokens. For POST, Qatom sends the buyer's arguments as a JSON body; accept both GET query and POST body if you can.
@@ -174,6 +184,8 @@ Echo inputs, mark defaults and their source, state units and currency every time
 - `bad_value` 400 → the supported range
 - `payment_required` 402 → the free URL and the paid item's name
 - `internal_error` 500
+
+**Expected misses are answers, not errors.** When the buyer asked a fair question and the answer is "not found", "already used", "expired" or "still waiting", return 200 with `ok: false` and a `status` field. Qatom treats any non-2xx reply as a failed delivery and shows the buyer's agent a paywall error instead of your message (observed 15 Oct 2026: a 404 from a free retrieve item reached the buyer as "Paywall error 502: the endpoint returned 404"). Keep 4xx for real mistakes in the call.
 
 Qatom may relay a failed call to the buyer as a generic payment error, so keep the errors precise and documented in `llms.txt`, and test the endpoint directly before testing through Qatom.
 
@@ -218,7 +230,7 @@ Create items in the Qatom Dashboard at https://dashboard.qatom.ai (Catalog, then
 
 **From chat (account tools).** A seller connected to Qatom can also run the account from AI chat; "When the seller wants you to set up the store" (above) gives the full process. Observed 12 Oct 2026: `account_choose` gives a one-time link (15 minutes) where the seller signs in and picks the business account the connection may read; after that the read tools work (`account_info`, `account_wallets`, `account_catalog`, `account_sales`, `account_mcp_server`). Changes (`account_create_item`, `account_update_item`, `account_update_details`, `account_rename_wallet`, `account_reboot_server`) each return an approval link and an `approval_id`; the seller approves that exact change, then the agent calls `account_finish_change`. Secrets, API keys, item headers, card, plan, custom domain, destroying the server and deleting the account stay on the Dashboard: `account_dashboard_link` (`page`: `secrets`, `api_keys`, `item_secrets` with `item_id`, `payment_card`, `plan`, `custom_domain`, `destroy_server`, `delete_account`) gives the seller the page. `account_create_item` takes no receipt line; set `descriptor` with `account_update_item`. Never ask for a secret in chat. Observed 12 Oct 2026: the account tools are offered only to a login that owns a seller account (a buyer-only login sees the buyer and cart tools alone); the choose page names the app asking, what the agent will see, and lists only the seller accounts that login owns; `account_finish_change` makes the approved change once and refuses a second try. If your connection doesn't list them, use the Dashboard.
 
-**Passkey first.** Recommend strongly that the seller (and any buyer) sets up a passkey before anything else: connecting the AI, choosing the seller account, approving a purchase above the limit and approving each account change all ask them to sign in, and a passkey makes each one a single tap instead of an emailed code. Set it up on the Qatom registration or sign-in screen (pay.m.todaq.net). The Qatom Console is a separate system with its own passkeys (Account → Passkeys).
+**Passkey first.** Recommend strongly that the seller (and any buyer) sets up a passkey before anything else: connecting the AI, choosing the seller account, approving a purchase above the limit and approving each account change all ask them to sign in, and a passkey makes each one a single tap instead of an emailed code. Set it up on the Qatom registration or sign-in screen (pay.m.todaq.net). Do it at registration: as of 15 Oct 2026 there is no page to add a passkey to an existing account (reported). Each approval page asks for a fresh sign-in, and with email codes the code limit was hit after about 6 to 8 approvals in 20 minutes, which let approvals expire; batch your changes and expect to re-request any that lapse. The Qatom Console is a separate system with its own passkeys (Account → Passkeys).
 
 ### Fulfilment parameters (Request headers & secret parameters)
 
@@ -323,6 +335,10 @@ Required checks:
 - the item shows in `catalog_search` on the master MCP (public items)
 - bought in a cart with another item, each returns its own answer and links that outlast the reply
 - any key in a public web page or demo is capped per visitor per day
+- wrapped software: every route of the upstream checked from outside; only the routes the item needs are reachable
+- expected misses (not found, used, expired, waiting) return 200 with `ok: false` and a status, not a 4xx
+- sensitive items: `/security` threat model, `security.txt`, published code, and an end-to-end option where buyers can run code
+- polling or repeat checks go to a free direct URL, not through Qatom, so they don't spend the seller's monthly transactions (the Builder plan allows 25 a month; free purchases get transaction ids too, so assume they count)
 
 **Output:** a pass/fail launch report, each failure with its exact next action.
 
