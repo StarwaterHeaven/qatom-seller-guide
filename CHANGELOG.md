@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.13 — 18 October 2026
+
+- §2 Sensitive items: keep the secret out of the chat with an in-chat card (MCP App) that encrypts before the model sees anything; Copy and Clear buttons on reveal pages. Reference adds the Secure Secrets Exchange in-chat app.
+- §7 In-chat views: views live on your own free MCP server next to the Qatom master MCP until checkout passes views through; declare `connectDomains` and CORS when a view calls your API.
+
 ## 1.12 — 18 October 2026
 
 - The catalog ratings are now **Qatom Scorecard**: intro, launch section and README point at `scorecard.agentkepler.tech/item/{id}` (beta; the same item links move to scorecard.qatom.ai), keep item 200 as the free lookup, and link CONTRIBUTING for anyone who thinks a check is unfair.
