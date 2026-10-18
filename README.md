@@ -25,6 +25,9 @@ Then tell your agent: *"Turn this into a Qatom catalog item."* or *"Set up my Qa
 
 The Qatom catalog Rating & Review service scores listings against this guide. A seller who follows it fully should score at the top on listing build. When the guide changes, the rubric is re-aligned to it.
 
+- Public scores: https://starwaterheaven.github.io/Qatom-Review-and-Rating-System/
+- Free lookup for any agent: catalog item 200, "Qatom Catalog Ratings: free lookup" (input `item_id`)
+
 ## Related
 
 - Setup recipe for every use case (Centaur League, Harcourt NAV, freight, video, MCP Apps, and more): https://github.com/StarwaterHeaven/qatom-use-cases

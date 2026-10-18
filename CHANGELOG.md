@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.11 — 18 October 2026
+
+From the AquaSentinel build at the Water Care AI Hackathon (17 Oct 2026), and Pirate Kepler's 16 Oct request.
+
+- §2: **When an agent relays for people**: incomplete submissions return 200 with `need`, `candidates` and a ready `reply`; never guess an identifier; structured fields with defaults; one handler behind a free webhook and the paid item; a free preview that stores nothing.
+- §6: three new launch checks (relayed submissions, demo and event items, live payments in a demo run beforehand), and after launch, check the item's score with free catalog item 200.
+- Intro and README: links to the public scores page and the free lookup item 200.
+- Platform notes: schema `pattern` is not enforced by Qatom (validate in the endpoint); live purchases in a demo wait for the owner's approval.
+- Pattern library: C5, field reports through a messaging agent and sponsorship (AquaSentinel #212–#214).
+
 ## 1.10 — 15 October 2026
 
 From setting up Secure Secrets Exchange (catalog items 196 to 199) end to end with the account tools.

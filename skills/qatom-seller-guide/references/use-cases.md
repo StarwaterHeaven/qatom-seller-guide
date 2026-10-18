@@ -63,6 +63,10 @@ Sell units of something the buyer spends later: compute credits, API credits, di
 ### C4. Orders and bookings (with a human yes)
 An agent places an order or booking on the buyer's behalf. Keep a preview step and a confirmation token so money moves only after a human says yes.
 
+### C5. Field reports through a messaging agent, and sponsorship with a money trail
+People report by WhatsApp or text; a messaging agent relays each report to the seller's endpoint, which asks back for anything missing (`need`, `candidates`, `reply`). Sponsors fund the work into an item's twin, and actions that reach people are purchases a human approves.
+- **AquaSentinel** (#212 sponsor 1.000, #213 approved alert 0.020, #214 submit a report 0.001; Kepler Market Services; hackathon demo items, 17 Oct 2026). Recipe 11 in the use-cases repo; code and demo video at https://github.com/StarwaterHeaven/AquaSentinel .
+
 ## D. Platform and buyer patterns
 
 ### D1. Programmatic buyer

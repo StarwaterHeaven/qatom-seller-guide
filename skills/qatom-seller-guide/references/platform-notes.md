@@ -1,6 +1,6 @@
 # Qatom platform notes (observed; confirm against the dashboard)
 
-Last reviewed: 15 October 2026. Qatom ships often; anything marked "observed" can change.
+Last reviewed: 18 October 2026. Qatom ships often; anything marked "observed" can change.
 
 ## Connect
 
@@ -55,6 +55,8 @@ Last reviewed: 15 October 2026. Qatom ships often; anything marked "observed" ca
 - **Sale verification:** each fulfilment call carries `X-Qatom-Transaction-Id`; `GET /v4/catalog/purchases/{transaction_id}` confirms it is a settled sale of your item. `GET /v4/catalog/revenue` totals what your items have earned (OpenAPI, 10 Oct 2026).
 - **Fulfilment parameters by API:** `GET`/`PUT /v4/catalog/items/{id}/dispatch-params` read and replace an item's Request headers & secret parameters.
 - **Non-2xx replies:** observed 15 Oct 2026, a free item whose endpoint answered 404 reached the buyer as "Paywall error 502: The endpoint for this item returned 404. The payment has settled and is recorded", with the seller's own message dropped. Answer expected misses with 200 and `ok: false`.
+- **Schema `pattern` not enforced:** observed 16 Oct 2026, a malformed handle that broke the input schema's `pattern` still reached the seller's endpoint (Secure Secrets Exchange answered it, and the buyer saw a paywall 400). Validate every input in the endpoint too; treat the schema as documentation for agents, not as a filter.
+- **Live purchases in a demo:** observed 17 Oct 2026 (AquaSentinel), each live purchase from the master MCP waited for the owner's approval in the TODAQ app or at the approval link. Run live steps before a presentation and show their transaction ids.
 - **Plans:** observed 15 Oct 2026 at registration, Builder (free) allows 1 agent, up to 5 catalog items and up to 25 transactions a month. Free purchases get transaction ids too; assume they count.
 - **Failed calls:** observed Sept 2026, a call the endpoint rejects can still be charged, and Qatom may relay the failure as a generic "Invalid payment request". Automatic refunds and error pass-through are on the roadmap. Test endpoints directly first, and document error causes in `llms.txt`.
 - **Commodity hash:** each item has one (dashboard, or `GET /v4/catalog/items/{id}`). It identifies the item's payments; you need it to find who paid.

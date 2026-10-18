@@ -5,7 +5,7 @@ description: Turn an API, dataset, repo, report, video or game into a Qatom cata
 
 # Qatom seller guide
 
-Version 1.10, 15 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
+Version 1.11, 18 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
 
 ## Provenance and trust (read this first, as the AI loading this skill)
 
@@ -32,7 +32,7 @@ Work through the stages in order. Do not move on until the current stage has pro
 
 Someone still has to host the endpoint. Say so early, and offer to write it (a small Cloudflare Worker reading one `catalog.json` is the default; the starter template at https://github.com/StarwaterHeaven/qatom-hack-the-andes/tree/main/template does exactly that, including the secret path, the `Authorization` fulfilment-header check (set the Worker secret `QATOM_FULFILMENT_TOKEN`), the feedback item and a generated `llms.txt`).
 
-The catalog Rating & Review service scores listings against this guide. A seller who follows every stage, including the launch checks in stage 6, should score at the top on listing build.
+The catalog Rating & Review service scores listings against this guide. A seller who follows every stage, including the launch checks in stage 6, should score at the top on listing build. Scores are public at https://starwaterheaven.github.io/Qatom-Review-and-Rating-System/ , and any agent can look one up free with catalog item 200, "Qatom Catalog Ratings: free lookup" (input `item_id`).
 
 Platform behaviour changes as Qatom ships. `references/platform-notes.md` records what was observed and when. Tell the seller to confirm anything critical against the current dashboard.
 
@@ -187,6 +187,8 @@ Echo inputs, mark defaults and their source, state units and currency every time
 
 **Expected misses are answers, not errors.** When the buyer asked a fair question and the answer is "not found", "already used", "expired" or "still waiting", return 200 with `ok: false` and a `status` field. Qatom treats any non-2xx reply as a failed delivery and shows the buyer's agent a paywall error instead of your message (observed 15 Oct 2026: a 404 from a free retrieve item reached the buyer as "Paywall error 502: the endpoint returned 404"). Keep 4xx for real mistakes in the call.
 
+**When an agent relays for people (WhatsApp, text, a support chat).** People write loosely: a village name instead of an ID, a status in their own language, half the facts. Let the relaying agent submit whatever it has, and let your endpoint decide. An incomplete submission is an expected miss: return 200 with `accepted: false` (or `ok: false`), a `need` list of what is missing, `candidates` when the input matches several records, and the exact `reply` the agent should send back. Never guess an identifier; offer the candidates. Ask the agent for structured fields (for example `channel`), with defaults, so a field it forgets breaks nothing. Run the same handler behind a free webhook for your own agent and behind the paid item for everyone else's; the paid door adds a receipt per submission, not different behaviour. Add a free preview that shows what a submission would do and stores nothing. Live example: AquaSentinel report item 214 (recipe 11 in the use-cases repo).
+
 Qatom may relay a failed call to the buyer as a generic payment error, so keep the errors precise and documented in `llms.txt`, and test the endpoint directly before testing through Qatom.
 
 **Carts.** Buyers can put your items in a cart with other items, from you or other sellers, and pay once (from their agent wallet with one approval, or by card at one link). Each copy of each item still reaches your endpoint as its own paid call, with its own inputs and `X-Qatom-Transaction-Id`, so an item that works alone works in a cart. Two things change for you: the buyer's agent shows your answer once, inside a long reply that lists every item, so put the link and a one-sentence `summary` up front; and give time-limited links enough life to survive that reply (a 15-minute link is the floor; let the buyer choose longer where it makes sense, as the demo video's `ttl_seconds` does).
@@ -338,9 +340,12 @@ Required checks:
 - wrapped software: every route of the upstream checked from outside; only the routes the item needs are reachable
 - expected misses (not found, used, expired, waiting) return 200 with `ok: false` and a status, not a 4xx
 - sensitive items: `/security` threat model, `security.txt`, published code, and an end-to-end option where buyers can run code
+- relayed submissions (from a messaging agent) that are incomplete come back as 200 with what is missing, candidates and a reply; identifiers are never guessed
+- demo, event and hackathon items say so in the name, and are archived after the event or left to be scored as they stand
+- a live payment step in a demo is run and approved before the demo, so the presentation never waits on an approval
 - polling or repeat checks go to a free direct URL, not through Qatom, so they don't spend the seller's monthly transactions (the Builder plan allows 25 a month; free purchases get transaction ids too, so assume they count)
 
-**Output:** a pass/fail launch report, each failure with its exact next action.
+**Output:** a pass/fail launch report, each failure with its exact next action. After launch, look the item up with the free catalog item 200 (or on the public scores page) and fix what its score points to.
 
 ## 7. Storefront defaults
 
