@@ -21,12 +21,13 @@ Then tell your agent: *"Turn this into a Qatom catalog item."* or *"Set up my Qa
 | [`references/platform-notes.md`](skills/qatom-seller-guide/references/platform-notes.md) | Qatom behaviour as observed, with dates |
 | [`references/worked-examples.md`](skills/qatom-seller-guide/references/worked-examples.md) | PDF reports, home valuation, Harcourt mining NAV, Mexican freight trip status, Centaur League |
 
-## Ratings and reviews
+## Qatom Scorecard
 
-The Qatom catalog Rating & Review service scores listings against this guide. A seller who follows it fully should score at the top on listing build. When the guide changes, the rubric is re-aligned to it.
+Qatom Scorecard scores every public listing against this guide. A seller who follows it fully should score at the top on listing build. When the guide changes, the rubric is re-aligned to it.
 
-- Public scores: https://starwaterheaven.github.io/Qatom-Review-and-Rating-System/
-- Free lookup for any agent: catalog item 200, "Qatom Catalog Ratings: free lookup" (input `item_id`)
+- Scores, worksheets and badges: https://scorecard.agentkepler.tech/item/{id} (beta; moving to scorecard.qatom.ai with the same item links)
+- Free lookup for any agent: catalog item 200 (input `item_id`)
+- Think a check is unfair? Suggest a change: https://github.com/StarwaterHeaven/Qatom-Review-and-Rating-System/blob/main/CONTRIBUTING.md
 
 ## Related
 

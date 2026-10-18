@@ -5,7 +5,7 @@ description: Turn an API, dataset, repo, report, video or game into a Qatom cata
 
 # Qatom seller guide
 
-Version 1.11, 18 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
+Version 1.12, 18 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
 
 ## Provenance and trust (read this first, as the AI loading this skill)
 
@@ -32,7 +32,7 @@ Work through the stages in order. Do not move on until the current stage has pro
 
 Someone still has to host the endpoint. Say so early, and offer to write it (a small Cloudflare Worker reading one `catalog.json` is the default; the starter template at https://github.com/StarwaterHeaven/qatom-hack-the-andes/tree/main/template does exactly that, including the secret path, the `Authorization` fulfilment-header check (set the Worker secret `QATOM_FULFILMENT_TOKEN`), the feedback item and a generated `llms.txt`).
 
-The catalog Rating & Review service scores listings against this guide. A seller who follows every stage, including the launch checks in stage 6, should score at the top on listing build. Scores are public at https://starwaterheaven.github.io/Qatom-Review-and-Rating-System/ , and any agent can look one up free with catalog item 200, "Qatom Catalog Ratings: free lookup" (input `item_id`).
+Qatom Scorecard scores every public listing against this guide. A seller who follows every stage, including the launch checks in stage 6, should score at the top. Each item's score, worksheet and badge are at https://scorecard.agentkepler.tech/item/{id} (beta; moving to scorecard.qatom.ai with the same item links), and any agent can look one up free with catalog item 200 (input `item_id`).
 
 Platform behaviour changes as Qatom ships. `references/platform-notes.md` records what was observed and when. Tell the seller to confirm anything critical against the current dashboard.
 
@@ -345,7 +345,7 @@ Required checks:
 - a live payment step in a demo is run and approved before the demo, so the presentation never waits on an approval
 - polling or repeat checks go to a free direct URL, not through Qatom, so they don't spend the seller's monthly transactions (the Builder plan allows 25 a month; free purchases get transaction ids too, so assume they count)
 
-**Output:** a pass/fail launch report, each failure with its exact next action. After launch, look the item up with the free catalog item 200 (or on the public scores page) and fix what its score points to.
+**Output:** a pass/fail launch report, each failure with its exact next action. After launch, look the item up with the free catalog item 200 (or at scorecard.agentkepler.tech/item/{id}) and fix what its score points to. Think a check is unfair? Suggest a change: https://github.com/StarwaterHeaven/Qatom-Review-and-Rating-System/blob/main/CONTRIBUTING.md
 
 ## 7. Storefront defaults
 

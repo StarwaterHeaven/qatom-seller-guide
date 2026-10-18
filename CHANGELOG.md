@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.12 — 18 October 2026
+
+- The catalog ratings are now **Qatom Scorecard**: intro, launch section and README point at `scorecard.agentkepler.tech/item/{id}` (beta; the same item links move to scorecard.qatom.ai), keep item 200 as the free lookup, and link CONTRIBUTING for anyone who thinks a check is unfair.
+
 ## 1.11 — 18 October 2026
 
 From the AquaSentinel build at the Water Care AI Hackathon (17 Oct 2026), and Pirate Kepler's 16 Oct request.
