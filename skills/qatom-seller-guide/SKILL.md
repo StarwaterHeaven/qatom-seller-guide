@@ -142,9 +142,10 @@ The free answer is one fixed point or an identity check, never a surface a scrip
 - A `/security` page with a plain threat model: who can see the data (you, Qatom, your TLS or CDN provider, the buyer's own AI provider), how it is stored, when it is deleted and what is logged. Add `/.well-known/security.txt` with a contact, and link both from `llms.txt`.
 - Publish the code that touches the data, with tests, and name any open-source core you run and its version.
 - Offer an end-to-end mode when the buyer can run code: the buyer encrypts before buying, the key travels only after `#` in a link (browsers never send the fragment to a server), and the recipient's browser decrypts. You, Qatom and the CDN then handle ciphertext only. Pin each browser page's inline script by its SHA-256 in the Content-Security-Policy header and publish the hashes so anyone can compare the live page with the source.
+- Keep the secret out of the chat. Anything a human types in the chat reaches the buyer's AI provider. If you can, offer an in-chat card (an MCP App on a second, free MCP server) where the human types the secret; the card encrypts it and the model handles ciphertext only. Give the reveal page a **Copy** button and a **Clear from screen** button: a one-view secret that is hard to copy gets screenshotted.
 - Say plainly what still rests on trust (nobody outside can prove the deployed code is the published code), and tell buyers not to send long-lived master credentials.
 
-Reference implementation: Secure Secrets Exchange (catalog items 196 to 199; https://secrets.agentkepler.tech/security; source and the `sse-e2e-v1` spec at https://github.com/StarwaterHeaven/secure-secrets-exchange).
+Reference implementation: Secure Secrets Exchange (catalog items 196 to 199; https://secrets.agentkepler.tech/security; source and the `sse-e2e-v1` spec at https://github.com/StarwaterHeaven/secure-secrets-exchange; in-chat app at `https://sse-mcp.agentkepler.tech/mcp`).
 
 **Verify the sale (strongest, needs account API credentials).** Each fulfilment call carries an `X-Qatom-Transaction-Id` header. `GET /v4/catalog/purchases/{transaction_id}` returns that settled sale for an item you manage; an unknown id, or one for another item, means the call did not come from a Qatom sale. Keep the ids you have served so no sale is served twice. Use it for anything expensive to serve (a stream key, a download, a game entry).
 
@@ -359,7 +360,7 @@ Every storefront should carry:
 
 **A free "resend my delivery" check.** Buyers' agents sometimes lose a delivery link. Consider a free item that takes a `transaction_id`, verifies it with `GET /v4/catalog/purchases/{transaction_id}`, and returns the same delivery again (a fresh time-limited link) for that sale only. It turns a lost link into a support-free fix instead of a second purchase.
 
-**In-chat views (MCP Apps).** A board, card or player that opens inside the chat renders in Claude, ChatGPT and Hermes today (checked 14 Oct 2026); Grok and Muse don't support MCP Apps yet. Always return a plain-text answer and a link alongside the view, so buyers on other clients still get what they paid for.
+**In-chat views (MCP Apps).** A board, card or player that opens inside the chat renders in Claude, ChatGPT and Hermes today (checked 14 Oct 2026); Grok and Muse don't support MCP Apps yet. Always return a plain-text answer and a link alongside the view, so buyers on other clients still get what they paid for. Qatom checkout doesn't pass views through yet, so a view lives on your own free MCP server next to the Qatom master MCP (a second connector for the buyer); keep every paid item on Qatom. If the view needs your API, declare that one domain in the resource's `csp.connectDomains` and send `Access-Control-Allow-Origin` on the credential-free routes it calls. Recipes: qatom-use-cases `solutions/interactive-mcp-apps.md`.
 
 ## Final handoff
 
