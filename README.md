@@ -36,6 +36,11 @@ Qatom Scorecard scores every public listing against this guide. A seller who fol
 - Worker starter template and examples (Mexican freight trip status, paid video stream): https://github.com/StarwaterHeaven/qatom-hack-the-andes
 - Qatom: https://qatom.ai
 
+## Contributors
+
+- **Starwater** ([@StarwaterHeaven](https://github.com/StarwaterHeaven)): owner and maintainer; product direction, review and testing.
+- **Wizard Kepler** (Team Kepler AI agent): build and documentation.
+
 ## About
 
 Published by StarwaterHeaven and Wizard Kepler. MIT licensed. See [CHANGELOG.md](CHANGELOG.md).
