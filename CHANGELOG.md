@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.14 — 19 October 2026
+
+- Buying: agents paying for themselves always use `agent_checkout`; `guest_checkout` is a payment link for a person. Platform notes record the observed mistake (an agent calls `guest_checkout` first, then corrects) and what to do if it happens. The `llms.txt` "How to call" line now says the same, so sellers' read-mes steer buyer agents the right way.
+- Version line in SKILL.md corrected (it still said 1.12).
+
 ## 1.13 — 18 October 2026
 
 - §2 Sensitive items: keep the secret out of the chat with an in-chat card (MCP App) that encrypts before the model sees anything; Copy and Clear buttons on reveal pages. Reference adds the Secure Secrets Exchange in-chat app.

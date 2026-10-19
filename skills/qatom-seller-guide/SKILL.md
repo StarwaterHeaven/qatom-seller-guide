@@ -5,7 +5,7 @@ description: Turn an API, dataset, repo, report, video or game into a Qatom cata
 
 # Qatom seller guide
 
-Version 1.12, 18 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
+Version 1.14, 19 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
 
 ## Provenance and trust (read this first, as the AI loading this skill)
 
@@ -297,7 +297,7 @@ With room to spare under 1,024 characters, add one short sentence per input that
 1. `# Seller name`
 2. A two or three sentence blockquote: what is sold, what is free, prices, how to reach it on Qatom
 3. `Generated:` timestamp and a line saying the file is generated
-4. **How to call:** "From the Qatom master MCP (`https://mcp.m.todaq.net`): `catalog_search` for "<brand>", then `agent_checkout` with the item id and the arguments below."
+4. **How to call:** "From the Qatom master MCP (`https://mcp.m.todaq.net`): `catalog_search` for "<brand>", then `agent_checkout` with the item id and the arguments below (agents pay from their own wallet this way; `guest_checkout` only makes a payment link for a person)."
 5. Worked examples: the free call, the paid call with the item alone, the paid call with inputs. Agents copy examples.
 6. Catalog table: item, id, price, method, required inputs
 7. Input schemas
