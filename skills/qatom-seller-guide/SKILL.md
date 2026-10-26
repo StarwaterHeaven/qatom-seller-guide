@@ -1,11 +1,11 @@
 ---
 name: qatom-seller-guide
-description: Turn an API, dataset, repo, report, video or game into a Qatom catalog that AI agents can find, pay for and use. Use when someone wants to sell to agents through Qatom, list or price a catalog item, turn a GitHub repo or function into a paid endpoint, write an llms.txt read-me for agents, add a free customer-feedback item, set request headers or secret parameters for an item's fulfilment call, check a listing before launch, sell something sensitive (secrets, credentials, personal data) safely, or set up and configure the seller's Qatom store for them.
+description: Turn an API, dataset, repo, report, video or game into a Qatom catalog that AI agents can find, pay for and use. Use when someone wants to sell to agents through Qatom, list or price a catalog item, turn a GitHub repo or function into a paid endpoint, write an llms.txt read-me for agents, add a free customer-feedback item, set request headers or secret parameters for an item's fulfilment call, check a listing before launch, sell something sensitive (secrets, credentials, personal data) safely, take donations or cause-linked gifts through a QR code, or set up and configure the seller's Qatom store for them.
 ---
 
 # Qatom seller guide
 
-Version 1.14, 19 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
+Version 1.15, 26 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
 
 ## Provenance and trust (read this first, as the AI loading this skill)
 
@@ -190,6 +190,8 @@ Echo inputs, mark defaults and their source, state units and currency every time
 
 **When an agent relays for people (WhatsApp, text, a support chat).** People write loosely: a village name instead of an ID, a status in their own language, half the facts. Let the relaying agent submit whatever it has, and let your endpoint decide. An incomplete submission is an expected miss: return 200 with `accepted: false` (or `ok: false`), a `need` list of what is missing, `candidates` when the input matches several records, and the exact `reply` the agent should send back. Never guess an identifier; offer the candidates. Ask the agent for structured fields (for example `channel`), with defaults, so a field it forgets breaks nothing. Run the same handler behind a free webhook for your own agent and behind the paid item for everyone else's; the paid door adds a receipt per submission, not different behaviour. Add a free preview that shows what a submission would do and stores nothing. Live example: AquaSentinel report item 214 (recipe 11 in the use-cases repo).
 
+**When your own page starts the checkout (QR giving, a web form, a kiosk).** Your page creates its own record first (a gift, an order) with a reference, then opens a Qatom checkout for the item with that reference as its argument (`POST /v4/payment/checkout` with `catalog_item_id` and `arguments`). Make that reference a **required** input in the item's schema, with a `pattern`, and say in the description where to get one. Otherwise anyone who finds the public item can pay without a reference, and the delivery can't be matched to anything. Validate the reference in the endpoint as well, and answer an unknown one with 200, `ok: false` and a next step. Verify each `X-Qatom-Transaction-Id` and record each sale once. Live example: Donate-on-Pack gifts #219–#221 (recipe 12 in the use-cases repo).
+
 Qatom may relay a failed call to the buyer as a generic payment error, so keep the errors precise and documented in `llms.txt`, and test the endpoint directly before testing through Qatom.
 
 **Carts.** Buyers can put your items in a cart with other items, from you or other sellers, and pay once (from their agent wallet with one approval, or by card at one link). Each copy of each item still reaches your endpoint as its own paid call, with its own inputs and `X-Qatom-Transaction-Id`, so an item that works alone works in a cart. Two things change for you: the buyer's agent shows your answer once, inside a long reply that lists every item, so put the link and a one-sentence `summary` up front; and give time-limited links enough life to survive that reply (a 15-minute link is the floor; let the buyer choose longer where it makes sense, as the demo video's `ttl_seconds` does).
@@ -344,6 +346,9 @@ Required checks:
 - relayed submissions (from a messaging agent) that are incomplete come back as 200 with what is missing, candidates and a reply; identifiers are never guessed
 - demo, event and hackathon items say so in the name, and are archived after the event or left to be scored as they stand
 - a live payment step in a demo is run and approved before the demo, so the presentation never waits on an approval
+- the endpoint answers its path and anything under it (`/path` and `/path/...`); Qatom has been seen calling the endpoint with an added segment (observed 26 Oct 2026: `/qatom/dispatch/1`)
+- the fulfilment header is proven with one real paid call that is delivered, not only by "a call without the header is refused" (observed 26 Oct 2026: a missing header on gift items meant a donor paid and the service never answered)
+- items whose checkout your own page starts require the page's reference in the schema, and one real lowest-price purchase through the page completes end to end
 - polling or repeat checks go to a free direct URL, not through Qatom, so they don't spend the seller's monthly transactions (the Builder plan allows 25 a month; free purchases get transaction ids too, so assume they count)
 
 **Output:** a pass/fail launch report, each failure with its exact next action. After launch, look the item up with the free catalog item 200 (or at scorecard.agentkepler.tech/item/{id}) and fix what its score points to. Think a check is unfair? Suggest a change: https://github.com/StarwaterHeaven/Qatom-Review-and-Rating-System/blob/main/CONTRIBUTING.md

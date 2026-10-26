@@ -67,6 +67,10 @@ An agent places an order or booking on the buyer's behalf. Keep a preview step a
 People report by WhatsApp or text; a messaging agent relays each report to the seller's endpoint, which asks back for anything missing (`need`, `candidates`, `reply`). Sponsors fund the work into an item's twin, and actions that reach people are purchases a human approves.
 - **AquaSentinel** (#212 sponsor 1.000, #213 approved alert 0.020, #214 submit a report 0.001; Kepler Market Services; hackathon demo items, 17 Oct 2026). Recipe 11 in the use-cases repo; code and demo video at https://github.com/StarwaterHeaven/AquaSentinel .
 
+### C6. Giving by QR (donations and cause-linked gifts)
+A QR code on a pack, poster or receipt opens a giving page; the page creates a gift with a reference and opens a Qatom checkout for a fixed-amount item; the endpoint verifies the sale, records the gift once, and the giver gets a thank-you page and receipt. A public records page and a partner view show every gift with its Qatom transaction.
+- **Donate-on-Pack**, Glacier Fresh x WaterAid Canada (#219 $1, #220 $2, #221 $3, each requiring `gift_ref`; #222 free feedback; seller GiveDemo; live demo with real payments since 24 Oct 2026, at https://give.agentkepler.tech). Qatom will donate the total collected to WaterAid Canada. Recipe 12 in the use-cases repo.
+
 ## D. Platform and buyer patterns
 
 ### D1. Programmatic buyer

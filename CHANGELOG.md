@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.15 — 26 October 2026
+
+From the Donate-on-Pack live demo (Glacier Fresh x WaterAid Canada), 24–26 Oct 2026.
+
+- §2: **When your own page starts the checkout** (QR giving, a web form, a kiosk): create your record and reference first, open the checkout with the reference as the item's argument, make the reference a required schema input with a `pattern`, validate it in the endpoint, and record each verified sale once.
+- §6: two launch checks: prove the fulfilment header with one real delivered purchase, not only "no header is refused"; and for page-started checkouts, require the page's reference and run one real lowest-price purchase through the page end to end.
+- Pattern library: C6, giving by QR (Donate-on-Pack #219–#222).
+- Launch check and platform note: Qatom was seen calling the endpoint with an added path segment (`/qatom/dispatch/1`); answer the path and anything under it.
+- Platform notes: page-started checkouts, and an observed automatic return of a payment whose delivery failed (purchase 276).
+
 ## 1.14 — 19 October 2026
 
 - Buying: agents paying for themselves always use `agent_checkout`; `guest_checkout` is a payment link for a person. Platform notes record the observed mistake (an agent calls `guest_checkout` first, then corrects) and what to do if it happens. The `llms.txt` "How to call" line now says the same, so sellers' read-mes steer buyer agents the right way.
