@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.16 — 23 November 2026
+
+From the first live card purchase through the pay-me link pilot (FaithScreen Deep Screen, item 267, 23 Nov 2026).
+
+- §2: **What a person sees after paying (the confirmation screen).** Qatom's card confirmation page renders the fulfilment response: URL fields become buttons, other fields become label/value rows, and nested fields become "Details › …" rows. It is a snapshot that never refreshes. Design rules: link first, fields named as labels, a plain summary, and for slow work an honest time range and a line saying the page does not update.
+- §6: launch check, buy each paid item of $0.50 or more once by card and read the confirmation screen as the buyer would.
+- Description: also triggers on designing what a buyer sees after paying.
+- Platform notes: the confirmation screen's layout, the receipt email linking back to it, and the checkout lookup answering 410 once paid.
+
 ## 1.15 — 26 October 2026
 
 From the Donate-on-Pack live demo (Glacier Fresh x WaterAid Canada), 24–26 Oct 2026.

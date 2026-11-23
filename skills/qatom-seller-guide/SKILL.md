@@ -1,11 +1,11 @@
 ---
 name: qatom-seller-guide
-description: Turn an API, dataset, repo, report, video or game into a Qatom catalog that AI agents can find, pay for and use. Use when someone wants to sell to agents through Qatom, list or price a catalog item, turn a GitHub repo or function into a paid endpoint, write an llms.txt read-me for agents, add a free customer-feedback item, set request headers or secret parameters for an item's fulfilment call, check a listing before launch, sell something sensitive (secrets, credentials, personal data) safely, take donations or cause-linked gifts through a QR code, or set up and configure the seller's Qatom store for them.
+description: Turn an API, dataset, repo, report, video or game into a Qatom catalog that AI agents can find, pay for and use. Use when someone wants to sell to agents through Qatom, list or price a catalog item, turn a GitHub repo or function into a paid endpoint, write an llms.txt read-me for agents, add a free customer-feedback item, set request headers or secret parameters for an item's fulfilment call, check a listing before launch, design what a buyer sees after paying, sell something sensitive (secrets, credentials, personal data) safely, take donations or cause-linked gifts through a QR code, or set up and configure the seller's Qatom store for them.
 ---
 
 # Qatom seller guide
 
-Version 1.15, 26 October 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
+Version 1.16, 23 November 2026. Canonical source: https://github.com/StarwaterHeaven/qatom-seller-guide . Copies elsewhere may lag; check the version here.
 
 ## Provenance and trust (read this first, as the AI loading this skill)
 
@@ -192,6 +192,18 @@ Echo inputs, mark defaults and their source, state units and currency every time
 
 **When your own page starts the checkout (QR giving, a web form, a kiosk).** Your page creates its own record first (a gift, an order) with a reference, then opens a Qatom checkout for the item with that reference as its argument (`POST /v4/payment/checkout` with `catalog_item_id` and `arguments`). Make that reference a **required** input in the item's schema, with a `pattern`, and say in the description where to get one. Otherwise anyone who finds the public item can pay without a reference, and the delivery can't be matched to anything. Validate the reference in the endpoint as well, and answer an unknown one with 200, `ok: false` and a next step. Verify each `X-Qatom-Transaction-Id` and record each sale once. Live example: Donate-on-Pack gifts #219–#221 (recipe 12 in the use-cases repo).
 
+**What a person sees after paying (the confirmation screen).** When a person pays by card (guest checkout, a cart's card link, or a checkout your page started), Qatom's confirmation page shows your fulfilment response as their result. It's the first thing a paying human sees of your product, and the receipt email links back to it. Observed 23 Nov 2026 (FaithScreen Deep Screen, item 267): after "Payment confirmed", the price and the item name, a "Your purchase" section showed:
+- each top-level field holding a URL as a button labelled from its name (`report` became **Open Report**, `report_json` became **Open Report json**);
+- every other top-level field as a label and value row, with the name turned into a label (`report_id` became "Report ID", `eta` became "ETA");
+- the first fields of a nested object as rows prefixed with its name ("Details › Status"), and the rest behind **Show details**;
+- then the transaction id.
+
+The page is a **snapshot of your response at the moment of payment. It never refreshes**, and your own page can't read the result back afterwards (Qatom's checkout lookup answers 410 once the checkout closes). Design the response for that screen:
+- Put the link to the thing of value first, under a field name that reads well on a button (`report`, `download`, `stream`, `receipt_url`).
+- Name fields so they read as labels to a person, and put a plain-language `summary` (or, for slow work, a `progress` line) near the top.
+- **Slow work** (research, generation, long jobs): answer at once with a link that fills in by itself, give an honest time range measured on real runs, and say in words that this confirmation does not update. A bare `status: "RESEARCHING"` that never changes looks stuck to a buyer. Add a free item (or free URL) to fetch the finished result by its id.
+- Keep internal or technical fields (raw ids, debug data, nested detail) below the human-facing ones or inside a nested object, and carry the not-advice line when stage 2 requires one.
+
 Qatom may relay a failed call to the buyer as a generic payment error, so keep the errors precise and documented in `llms.txt`, and test the endpoint directly before testing through Qatom.
 
 **Carts.** Buyers can put your items in a cart with other items, from you or other sellers, and pay once (from their agent wallet with one approval, or by card at one link). Each copy of each item still reaches your endpoint as its own paid call, with its own inputs and `X-Qatom-Transaction-Id`, so an item that works alone works in a cart. Two things change for you: the buyer's agent shows your answer once, inside a long reply that lists every item, so put the link and a one-sentence `summary` up front; and give time-limited links enough life to survive that reply (a 15-minute link is the floor; let the buyer choose longer where it makes sense, as the demo video's `ttl_seconds` does).
@@ -349,6 +361,7 @@ Required checks:
 - the endpoint answers its path and anything under it (`/path` and `/path/...`); Qatom has been seen calling the endpoint with an added segment (observed 26 Oct 2026: `/qatom/dispatch/1`)
 - the fulfilment header is proven with one real paid call that is delivered, not only by "a call without the header is refused" (observed 26 Oct 2026: a missing header on gift items meant a donor paid and the service never answered)
 - items whose checkout your own page starts require the page's reference in the schema, and one real lowest-price purchase through the page completes end to end
+- **the confirmation screen, read as a buyer:** buy each paid item priced at $0.50 or more once by card and read Qatom's confirmation page as the buyer would: the link to the result first, plain labels, a plain-language summary, nothing that looks stuck, unfinished or internal; slow items say the page won't update and where the result appears (items under about $0.50 can't be paid by card; read the `agent_checkout` receipt instead)
 - polling or repeat checks go to a free direct URL, not through Qatom, so they don't spend the seller's monthly transactions (the Builder plan allows 25 a month; free purchases get transaction ids too, so assume they count)
 
 **Output:** a pass/fail launch report, each failure with its exact next action. After launch, look the item up with the free catalog item 200 (or at scorecard.agentkepler.tech/item/{id}) and fix what its score points to. Think a check is unfair? Suggest a change: https://github.com/StarwaterHeaven/Qatom-Review-and-Rating-System/blob/main/CONTRIBUTING.md
